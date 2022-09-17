@@ -1,28 +1,24 @@
-﻿using ItemChanger;
-using ItemChanger.Extensions;
-using ItemChanger.Locations;
-using ItemChanger.Placements;
-using Osmi.Game;
-using Satchel.Futils;
+﻿namespace BreakableCharms;
 
-namespace BreakableCharms;
-
-public class BreakableCharms : Mod, ILocalSettings<GlobalSettings>
+public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings>, IGlobalSettings<GlobalSettings>
 {
     internal static BreakableCharms Instance;
 
     public static Sprite brokenCharm;
 
-    public static GlobalSettings settings { get; private set; } = new GlobalSettings();
-    public void OnLoadLocal(GlobalSettings s) => settings = s;
-    public GlobalSettings OnSaveLocal() => settings;
+    public static LocalSettings localSettings { get; private set; } = new LocalSettings();
+    public void OnLoadLocal(LocalSettings s) => localSettings = s;
+    public LocalSettings OnSaveLocal() => localSettings;
+    public static GlobalSettings globalSettings { get; private set; } = new GlobalSettings();
+    public void OnLoadGlobal(GlobalSettings s) => globalSettings = s;
+    public GlobalSettings OnSaveGlobal() => globalSettings;
 
     public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
 
     private PlayMakerFSM charmFSM;
-    private GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
+    private static GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
 
-    public static Dictionary<int, Sprite> CharmSpriteFromID = new();
+    public static readonly Dictionary<int, Sprite> CharmSpriteFromID = new();
 
 
     public override void Initialize()
@@ -32,141 +28,53 @@ public class BreakableCharms : Mod, ILocalSettings<GlobalSettings>
         brokenCharm = AssemblyUtils.GetSpriteFromResources("Images.BrokenCharm.png");
 
         On.UIManager.StartNewGame += ICHook;
-
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
+        On.HeroController.Start += UnEquipBrokenCharms;
+        On.HeroController.Start += MakeBrokenCharmsUnEquippable;
+        On.CharmIconList.Start += FixCharmSprites;
+        ModHooks.AfterPlayerDeadHook += BreakCharmsOnPlayerDead;
+        ModHooks.AfterTakeDamageHook += BreakCharmsOnTakeDamage;
+        On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
 
-        //todo: fix sprite on startup
-        //todo: fix sprite on fixing (see ck api)
-        //todo: message on death
+        PopulateCharmSpriteFromID();
 
+        //todo: make charm fixing UI
+        //todo: handle all sprites for gc
+        //todo: add special handling for royal charm
+        //todo: add special handling for currently fragile charms
+        //todo: rename to delicate, fragile, unbreakable
+        //todo: rando integration
+        
         ModHooks.HeroUpdateHook += () =>
         {
             if (Input.GetKeyDown(KeyCode.Q))
-            { 
+            {
                 for (int i = 1; i <= 30; i++)
                 {
                     PlayerData.instance.SetBoolInternal("gotCharm_" + i, true);
                 }
             }
         };
-
-        On.HeroController.Start += (orig, self) =>
-        {
-            orig(self);
-
-            Ref.PD.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
-            {
-                if (settings.BrokenCharms.ContainsKey(getNameinGS(c)))
-                {
-                    settings.BrokenCharms[getNameinGS(c)] = true;
-                    CharmUtil.UnequipCharm(c);
-                    CharmIconList.Instance.spriteList[c] = brokenCharm;
-                }
-            });
-            
-            charmFSM = CharmUIGameObject.LocateMyFSM("UI Charms");
-
-            var empty = charmFSM.CopyState("Init", "Empty");
-            empty.Actions = Array.Empty<FsmStateAction>();
-            empty.Transitions = Array.Empty<FsmTransition>();
-
-            charmFSM.Intercept(new TransitionInterceptor
-            {
-                fromState = "Deactivate UI",
-                eventName = "FINISHED",
-                toStateDefault = "Empty", //should intercept is true so it doesnt matter
-                toStateCustom = "Empty", //i will handle the cases myself
-                shouldIntercept = () => true,
-                onIntercept = (_, _) =>
-                {
-                    var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
-
-                    if (settings.BrokenCharms.TryGetValue(getNameinGS(charmNum), out var broken) && broken)
-                    {
-                        charmFSM.SetState("Unequippable");
-                    }
-                    else
-                    {
-                        charmFSM.SetState("Broken?");
-                    }
-                    
-                }
-            });
-        };
-
-        On.CharmIconList.Start += (orig,self) =>
-        {
-            orig(self);
-            foreach (var (charm, isBroken) in settings.BrokenCharms.Where(c => c.Value))
-            {
-                CharmIconList.Instance.spriteList[getNumFromGS(charm)] = brokenCharm;
-            }
-        };
-            
-
-        ModHooks.AfterPlayerDeadHook += () =>
-        {
-            Ref.PD.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
-            {
-                if (settings.BrokenCharms.ContainsKey(getNameinGS(c)))
-                {
-                    settings.BrokenCharms[getNameinGS(c)] = true;
-                    CharmUtil.UnequipCharm(c);
-                    CharmIconList.Instance.spriteList[c] = brokenCharm;
-                }
-            });
-            
-        };
-        
-        Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
-        foreach (var (charmNum, spriteName) in CharmSpriteNameFromID)
-        {
-            CharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
-        }
-
-
-    }
-
-    private string ChangeCharmNamesOnBroken(string key, string sheettitle, string orig)
-    {
-        if (key.Contains("CHARM_NAME"))
-        {
-            if(settings.BrokenCharms.TryGetValue(getNameinGS(int.Parse(key.Split('_')[2])), out var isBroken) && isBroken)
-            {
-                return "Broken " + orig;
-            }
-        }
-        if (key.Contains("CHARM_DESC"))
-        {
-            if(settings.BrokenCharms.TryGetValue(getNameinGS(int.Parse(key.Split('_')[2])), out var isBroken) && isBroken)
-            {
-                return "A broken charm that " + orig[0].ToString().ToLower() + orig.Substring(1);
-            }
-        }
-
-        return orig;
     }
 
     private void ICHook(On.UIManager.orig_StartNewGame orig, UIManager self, bool permadeath, bool bossrush)
     {
-        ItemChangerMod.CreateSettingsProfile(overwrite: true, createDefaultModules: false);
+        ItemChangerMod.CreateSettingsProfile(overwrite: false, createDefaultModules: true);
 
-        ShopLocation legEaterShopLocation = new()
+        ShopPlacement LegEaterShopPlacement = new("Leg_Eater")
         {
-            dungDiscount = true,
-            objectName = "Leg_Eater",
-            fsmName = "Conversation Control",
-            defaultShopItems = DefaultShopItems.LegEaterCharms | DefaultShopItems.LegEaterRepair,
-            name = "Leg_Eater",
-            sceneName = "Fungus2_26",
-            flingType = FlingType.DirectDeposit,
-            tags = null,
-            requiredPlayerDataBool = ""
-        };
-
-        ShopPlacement LegEaterShopPlacement = new ShopPlacement("Leg_Eater")
-        {
-            Location = legEaterShopLocation,
+            Location = new ShopLocation
+            {
+                dungDiscount = true,
+                objectName = "Leg_Eater",
+                fsmName = "Conversation Control",
+                defaultShopItems = DefaultShopItems.LegEaterCharms | DefaultShopItems.LegEaterRepair,
+                name = "Leg_Eater",
+                sceneName = "Fungus2_26",
+                flingType = FlingType.DirectDeposit,
+                tags = null,
+                requiredPlayerDataBool = ""
+            },
             defaultShopItems = DefaultShopItems.LegEaterCharms | DefaultShopItems.LegEaterRepair,
             dungDiscount = true,
             requiredPlayerDataBool = string.Empty
@@ -174,18 +82,137 @@ public class BreakableCharms : Mod, ILocalSettings<GlobalSettings>
         
         List<AbstractItem> charmList = new List<AbstractItem>();
         
-        foreach (var (charm, _) in settings.BrokenCharms)
+        //repairing charms
+        foreach (var (charmNum, _) in CharmNameFromID)
         {
-            int charmNum = getNumFromGS(charm);
-            charmList.Add(new BrokenCharmItem(charmNum)
+            charmList.Add(new FragileCharmItem
             {
+                charmNum = charmNum,
+                name = CharmNameFromID[charmNum].Replace("_", " "),
+                UIDef = new CharmUIDef
+                {
+                    charmNum = charmNum,
+                    StateAfterPurchase = CharmState.Fragile
+                },
                 tags = new List<Tag>
                 {
                     new CostTag
                     {
                         Cost = new GeoCost(200)
                     },
-                    new ShopReqTag(charmNum)
+                    new BrokenRequirement
+                    {
+                        charmNum = charmNum,
+                    },
+                    new ShopPersistentTag
+                    {
+                        persistence = Persistence.Persistent
+                    },
+                }
+            });
+        }
+
+        foreach (var (charmNum, _) in CharmNameFromID)
+        {
+            charmList.Add(new DurableCharmItem
+            {
+                charmNum = charmNum,
+                name = CharmNameFromID[charmNum].Replace("_", " "),
+                UIDef = new CharmUIDef
+                {
+                    charmNum = charmNum,
+                    StateAfterPurchase = CharmState.Durable
+                },
+                tags = new List<Tag>
+                {
+                    new CostTag()
+                    {
+                        Cost = new MultiCost(new GeoCost(600),
+                            new NotBrokenCost { charmNum = charmNum, })
+                    },
+                    new HasCharmRequirement()
+                    {
+                        charmNum = charmNum
+                    },
+
+                    new ShopPersistentTag
+                    {
+                        persistence = Persistence.Single
+                    },
+
+                }
+            });
+        }
+
+        foreach (var (charmNum, _) in CharmNameFromID)
+        {
+            charmList.Add(new DurableCharmItem
+            {
+                charmNum = charmNum,
+                name = CharmNameFromID[charmNum].Replace("_", " "),
+                UIDef = new CharmUIDef
+                {
+                    charmNum = charmNum,
+                    StateAfterPurchase = CharmState.Durable
+                },
+                tags = new List<Tag>
+                {
+                    new CostTag()
+                    { 
+                        Cost = new MultiCost(new GeoCost(600), 
+                        new NotBrokenCost { charmNum = charmNum, })
+                    },
+                    new HasCharmRequirement()
+                    {
+                        charmNum = charmNum
+                    },
+                    new HasCharmStateRequirement()
+                    {
+                        charmNum = charmNum,
+                        requiredState = CharmState.Fragile,
+                    },
+                    
+                    new ShopPersistentTag
+                    {
+                        persistence = Persistence.Single
+                    },
+                    
+                }
+            });
+        }
+
+        foreach (var (charmNum, _) in CharmNameFromID)
+        {
+            charmList.Add(new UnbreakableCharmItem
+            {
+                charmNum = charmNum,
+                name = CharmNameFromID[charmNum].Replace("_", " "),
+                UIDef = new CharmUIDef
+                {
+                    charmNum = charmNum,
+                    StateAfterPurchase = CharmState.Unbreakable
+                },
+                tags = new List<Tag>
+                {
+                    new CostTag()
+                    {
+                        Cost = new MultiCost(new GeoCost(1500),
+                            new NotBrokenCost { charmNum = charmNum, })
+                    },
+                    new HasCharmRequirement()
+                    {
+                        charmNum = charmNum
+                    },
+                    new HasCharmStateRequirement()
+                    {
+                        charmNum = charmNum,
+                        requiredState = CharmState.Durable,
+                    },
+                    new ShopPersistentTag
+                    {
+                        persistence = Persistence.Single
+                    },
+
                 }
             });
         }
@@ -198,8 +225,230 @@ public class BreakableCharms : Mod, ILocalSettings<GlobalSettings>
         orig(self, permadeath, bossrush);
     }
 
-    internal static string getNameinGS(int charmNum) => $"charm_{charmNum}_Broken";
-    internal static int getNumFromGS(string charmName) => int.Parse(charmName.Split('_')[1]);
+    private void MakeBrokenCharmsUnEquippable(On.HeroController.orig_Start orig, HeroController self)
+    {
+        orig(self);
+        charmFSM = CharmUIGameObject.LocateMyFSM("UI Charms");
+
+        var empty = charmFSM.CopyState("Init", "Empty");
+        empty.Actions = Array.Empty<FsmStateAction>();
+        empty.Transitions = Array.Empty<FsmTransition>();
+
+        charmFSM.Intercept(new TransitionInterceptor
+        {
+            fromState = "Deactivate UI",
+            eventName = "FINISHED",
+            toStateDefault = "Empty", //should intercept is true so it doesnt matter
+            toStateCustom = "Empty", //i will handle the cases myself
+            shouldIntercept = () => true,
+            onIntercept = (_, _) =>
+            {
+                var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
+
+                if (localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
+                {
+                    charmFSM.SetState("Unequippable");
+                }
+                else
+                {
+                    charmFSM.SetState("Broken?");
+                }
+                    
+            }
+        });
+    }
+
+    private void UnEquipBrokenCharms(On.HeroController.orig_Start orig, HeroController self)
+    {
+        orig(self);
+        Ref.PD.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
+        {
+            if (localSettings.BrokenCharms.ContainsKey(c) && localSettings.BrokenCharms[c].isBroken)
+            {
+                BreakCharm(c);
+            }
+        });
+    }
+
+    private void FixCharmSprites(On.CharmIconList.orig_Start orig, CharmIconList self)
+    {
+        orig(self);
+        foreach (var (charm, _) in localSettings.BrokenCharms.Where(c => c.Value.isBroken))
+        {
+            CharmIconList.Instance.spriteList[charm] = brokenCharm;
+        }
+    }
+
+    private string ChangeCharmNamesOnBroken(string key, string sheettitle, string orig)
+    {
+        if (key.Contains("CHARM_NAME"))
+        {
+            if(localSettings.BrokenCharms.TryGetValue(GetCharmNumFromKey(key), out var charmData))
+            {
+                if (key.Contains(CharmUIDef.Repair_Key))
+                {
+                    orig = GetOriginalText(key,sheettitle,CharmUIDef.Repair_Key);
+                    string prefix = charmData.charmState switch
+                    {
+                        CharmState.Fragile => "Fragile ",
+                        CharmState.Durable => "Durable ",
+                        _ => ""
+                    };
+                    return prefix + orig + " (Repair)";
+                }
+                if (key.Contains(CharmUIDef.Durable_Key))
+                {
+                    orig = GetOriginalText(key,sheettitle,CharmUIDef.Durable_Key);
+                    return "Durable " + orig;
+                }
+                if (key.Contains(CharmUIDef.Unbreakable_Key))
+                {
+                    orig = GetOriginalText(key,sheettitle,CharmUIDef.Unbreakable_Key);
+                    return "Unbreakable " + orig;
+                }
+
+                //in charms menu
+                if (charmData.isBroken) return "Broken " + orig;
+                
+                switch (charmData.charmState)
+                {
+                    case CharmState.Fragile:
+                        return "Fragile " + orig;
+                    case CharmState.Durable:
+                        return "Durable " + orig;
+                    case CharmState.Unbreakable:
+                        return "Unbreakable " + orig;
+                }
+            }
+        }
+        if (key.Contains("CHARM_DESC"))
+        {
+            if(localSettings.BrokenCharms.TryGetValue(GetCharmNumFromKey(key), out var charmData))
+            {
+                if (key.Contains(CharmUIDef.Repair_Key))
+                {
+                    orig = GetOriginalText(key,sheettitle,CharmUIDef.Repair_Key);
+                    return "Repair the charm that " + MakeFirstCharLower(orig).Replace("<br>", "\n");
+                }
+                if (key.Contains(CharmUIDef.Durable_Key))
+                {
+                    orig = GetOriginalText(key,sheettitle,CharmUIDef.Durable_Key);
+                    return "A durable charm that " + MakeFirstCharLower(orig).Replace("<br>", "\n");
+                }
+                if (key.Contains(CharmUIDef.Unbreakable_Key))
+                {
+                    orig = GetOriginalText(key,sheettitle,CharmUIDef.Unbreakable_Key);
+                    return "An unbreakable charm that " + MakeFirstCharLower(orig).Replace("<br>", "\n");
+                }
+
+                //in charms menu
+                if(charmData.isBroken) return "A broken charm that " + MakeFirstCharLower(orig);
+                
+                switch (charmData.charmState)
+                {
+                    case CharmState.Fragile:
+                        return "A fragile charm that " + MakeFirstCharLower(orig);
+                    case CharmState.Durable:
+                        return "A durable charm that " + MakeFirstCharLower(orig);
+                    case CharmState.Unbreakable:
+                        return "An unbreakable charm that " + MakeFirstCharLower(orig);
+                }
+            }
+        }
+
+        return orig;
+    }
+    
+    private void BreakCharmsOnPlayerDead()
+    {
+        BreakEquippedCharms(s => s is CharmState.Durable or CharmState.Fragile);
+    }
+    
+    private int BreakCharmsOnTakeDamage(int hazardtype, int damageamount)
+    {
+        if (globalSettings.BreakOnAllDamage && damageamount > 0 || globalSettings.BreakOnDoubleDamage && damageamount > 2)
+        {
+            BreakEquippedCharms(s => s is CharmState.Fragile);
+        }
+        return damageamount;
+    }
+    
+    private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
+    {
+        if (globalSettings.BreakOnHazardRespawn)
+        {
+            BreakEquippedCharms((s) => s is CharmState.Fragile);
+        }
+        yield return orig(self);
+    }
+    
+    private void PopulateCharmSpriteFromID()
+    {
+        Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        foreach (var (charmNum, spriteName) in CharmSpriteNameFromID)
+        {
+            CharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
+        }
+    }
+
+    private void BreakEquippedCharms(Func<CharmState, bool> hasCorrectCharmState)
+    {
+        bool anyBroken = false;
+        Ref.PD.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
+        {
+            if (localSettings.BrokenCharms.ContainsKey(c) && hasCorrectCharmState(localSettings.BrokenCharms[c].charmState))
+            {
+                BreakCharm(c);
+                anyBroken = true;
+            }
+        });
+
+        if (anyBroken)
+        {
+            new BreakCharmUIDef().SendMessage(MessageType.Corner, null);
+        }
+        
+    }
+    private void BreakCharm(int charmNum)
+    {
+        localSettings.BrokenCharms[charmNum].isBroken = true;
+        CharmUtil.UnequipCharm(charmNum);
+        CharmIconList.Instance.spriteList[charmNum] = brokenCharm;
+        PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
+        PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
+        
+        if (charmNum == (int)Charm.Grimmchild)
+        {
+            var gc = GameObject.FindWithTag("Grimmchild");
+            if (gc != null)
+            {
+                UnityEngine.Object.Destroy(gc);
+            }
+            
+        }
+    }
+
+    public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates) =>
+        ModMenu.CreateModMenu(modListMenu);
+
+    public bool ToggleButtonInsideMenu => false;
+
+    private string GetOriginalText(string key, string sheettitle, string identifier)
+    {
+        return Language.Language.GetInternal(RemoveExcessData(key, identifier), sheettitle);
+    }
+    private string RemoveExcessData(string key, string identifier)
+    {
+        return key.Replace("#!#", "").Replace(identifier, "");
+    }
+    private int GetCharmNumFromKey(string key)
+    {
+        return int.Parse(key.Split('_')[2]);
+    }
+    private string MakeFirstCharLower(string text)
+    {
+        return text[0].ToString().ToLower() + text.Substring(1);
+    }
     
     public static readonly Dictionary<int, string> CharmNameFromID = new()
     {
