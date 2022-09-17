@@ -18,7 +18,7 @@ public class FragileCharmItem : AbstractItem
     public override void GiveImmediate(GiveInfo info)
     {
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
-        CharmIconList.Instance.spriteList[charmNum] = BreakableCharms.CharmSpriteFromID[charmNum];
+        CharmIconList.Instance.spriteList[charmNum] = Dictionaries.CharmSpriteFromID[charmNum];
         GameManager.instance.StartCoroutine(ResetPaidAfterAFrame());
     }
 

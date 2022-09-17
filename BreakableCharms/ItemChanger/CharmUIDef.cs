@@ -6,7 +6,7 @@ public class CharmUIDef:MsgUIDef
 {
     public int charmNum;
     public CharmState StateAfterPurchase;
-    private UIDef originalDef => Finder.GetItem(BreakableCharms.CharmNameFromID[charmNum]).UIDef;
+    private UIDef originalDef => Finder.GetItem(Dictionaries.CharmNameFromID[charmNum]).UIDef;
 
     public const string Repair_Key = "BreakableCharms-Repair-Broken-Charm-";
     public const string Durable_Key = "BreakableCharms-Make-Charm-Durable-";
