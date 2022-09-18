@@ -95,10 +95,22 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <None Remove="Images\*" />
+        <None Remove="Images\Broken\*.png" />
+        <None Remove="Images\Broken\Special\*.png" />
+        <None Remove="Images\Delicate\*.png" />
+        <None Remove="Images\Delicate\Special\*.png" />
+        <None Remove="Images\Fragile\*.png" />
+        <None Remove="Images\Fragile\Special\*.png" />
+        <None Remove="Images\Misc\*.png" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="Images\*" />
+        <EmbeddedResource Include="Images\Broken\*.png" />
+        <EmbeddedResource Include="Images\Broken\Special\*.png" />
+        <EmbeddedResource Include="Images\Delicate\*.png" />
+        <EmbeddedResource Include="Images\Delicate\Special\*.png" />
+        <EmbeddedResource Include="Images\Fragile\*.png" />
+        <EmbeddedResource Include="Images\Fragile\Special\*.png" />
+        <EmbeddedResource Include="Images\Misc\*.png" />
     </ItemGroup>
 
     <Target Name="CopyMod" AfterTargets="PostBuildEvent">

@@ -24,25 +24,26 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     {
         Instance ??= this;
 
-        brokenCharm = Extensions.LoadSpriteFromResources("Images.BrokenCharm");
-        geo = Extensions.LoadSpriteFromResources("Images.Geo", 100f);
+        brokenCharm = Extensions.LoadSpriteFromResources("Images.Misc.BrokenCharm");
+        geo = Extensions.LoadSpriteFromResources("Images.Misc.Geo", 100f);
 
         On.UIManager.StartNewGame += ICHook;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
         On.HeroController.Start += UnEquipBrokenCharms;
         On.HeroController.Start += DoFSMEdits;
         On.CharmIconList.Start += FixCharmSprites;
+        ModHooks.SceneChanged += FixCharmSpritesOnSceneChange;
         ModHooks.AfterPlayerDeadHook += BreakCharmsOnPlayerDead;
         ModHooks.AfterTakeDamageHook += BreakCharmsOnTakeDamage;
         On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
 
         LoadSprites();
 
-        //todo: make charm fixing UI
-        //todo: handle all sprites for gc
-        //todo: add special handling for royal charm
-        //todo: add special handling for currently fragile charms
-        //todo: rename to delicate, fragile, unbreakable
+        //todo: fix royal charm and grimmchild sprite not overriding
+        //todo: check if voidheart can be unequipped on death
+        //todo: update charms images on purchase
+        //todo: add sound for repairing charms
+        //todo: make text grey if people are broke
         //todo: rando integration
 
         ModHooks.NewGameHook += () =>
@@ -50,10 +51,16 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
             for (int i = 1; i <= 40; i++)
             {
                 PlayerData.instance.SetBoolInternal("gotCharm_" + i, true);
+                PlayerData.instance.hasCharm = true;
+                PlayerData.instance.charmsOwned = 40;
+                PlayerData.instance.royalCharmState = 4;
+                PlayerData.instance.gotShadeCharm = true;
+                PlayerData.instance.charmCost_36 = 0;
+                PlayerData.instance.grimmChildLevel = 5;
+                PlayerData.instance.charmCost_40 = 3;
             }
         };
     }
-
     private void ICHook(On.UIManager.orig_StartNewGame orig, UIManager self, bool permadeath, bool bossrush)
     {
         ItemChangerHook.HookIC();
@@ -81,10 +88,17 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     private void FixCharmSprites(On.CharmIconList.orig_Start orig, CharmIconList self)
     {
         orig(self);
-        foreach (var (charm, _) in localSettings.BrokenCharms.Where(c => c.Value.isBroken))
+        foreach (var (charm, charmData) in localSettings.BrokenCharms)
         {
-            //todo: handle special cases
-            CharmIconList.Instance.spriteList[charm] = localSettings.BrokenCharms[charm].GetSprite();
+            CharmIconList.Instance.spriteList[charm] = charmData.GetSprite();
+        }
+    }
+
+    private void FixCharmSpritesOnSceneChange(string obj)
+    {
+        foreach (var (charm, charmData) in localSettings.BrokenCharms)
+        {
+            CharmIconList.Instance.spriteList[charm] = charmData.GetSprite();
         }
     }
 
@@ -126,6 +140,10 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     private void BreakCharmsOnPlayerDead()
     {
         BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate);
+        foreach (var (charm, charmData) in localSettings.BrokenCharms)
+        {
+            CharmIconList.Instance.spriteList[charm] = charmData.GetSprite();
+        }
     }
     
     private int BreakCharmsOnTakeDamage(int hazardtype, int damageamount)

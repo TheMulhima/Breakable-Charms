@@ -25,7 +25,7 @@ public static class Extensions
 
     public static Dictionary<string, Sprite> LoadedSprites = new Dictionary<string, Sprite>();
 
-    public static Sprite LoadSpriteFromResources(string path, float ppu = 64f)
+    public static Sprite LoadSpriteFromResources(string path, float ppu = 100f)
     {
         if (LoadedSprites.TryGetValue(path, out var loadedSprite)) return loadedSprite;
 
