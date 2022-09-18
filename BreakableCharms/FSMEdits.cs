@@ -4,7 +4,7 @@ namespace BreakableCharms;
 
 public static class FSMEdits
 {
-    private static GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
+    public static GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
     private static PlayMakerFSM charmFSM;
     
     public static void CharmFSMEdits()
@@ -20,8 +20,8 @@ public static class FSMEdits
         {
             fromState = "Deactivate UI",
             eventName = "FINISHED",
-            toStateDefault = "Empty", //should intercept is true so it doesnt matter
-            toStateCustom = "Empty", //i will handle the cases myself
+            toStateDefault = "Unequippable", //should intercept is true so it doesnt matter
+            toStateCustom = "Unequippable", //i will handle the cases myself
             shouldIntercept = () => true,
             onIntercept = (_, _) =>
             {
@@ -29,7 +29,7 @@ public static class FSMEdits
 
                 if (BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
                 {
-                    if (PlayerData.instance.GetInt(nameof(PlayerData.geo)) >= 200)
+                    if (Ref.PD.GetInt(nameof(PlayerData.geo)) >= 200)
                     {
                         RepairCharm(costgo, costFSM, charmNum);
                     }
@@ -39,7 +39,7 @@ public static class FSMEdits
                 }
                 else
                 {
-                    //next state in chain, skips break //todo: implement fragile charms
+                    //next state in chain, skips break
                     charmFSM.SetState("Royal?");
                 }
                     
@@ -103,16 +103,9 @@ public static class FSMEdits
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
                         
         //todo: handle different cases
-        Sprite newSprite = BreakableCharms.localSettings.BrokenCharms[charmNum].GetSprite();
-                        
-        CharmIconList.Instance.spriteList[charmNum] = newSprite;
-        CharmUIGameObject.transform.Find("Collected Charms").Find(charmNum.ToString()).Find("Sprite").ChangeSpriteRenderer(newSprite);
-        CharmUIGameObject.transform.Find("Details").Find("Detail Sprite").ChangeSpriteRenderer(newSprite);
-                        
-        CharmUIGameObject.transform.Find("Text Desc").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_DESC_{charmNum}", "UI");
-        CharmUIGameObject.transform.Find("Text Name").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_NAME_{charmNum}", "UI");
-                        
-        var notchCost = PlayerData.instance.GetInt($"charmCost_{charmNum}");
+        BreakableCharms.SetAllCharmIcons();
+        
+        var notchCost = Ref.PD.GetInt($"charmCost_{charmNum}");
         costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value);
         costgo.Find("Text Cost").GetComponent<TextMeshPro>().text = "Cost";
         costgo.Find($"Cost 1").GetComponent<SpriteRenderer>().sprite = BreakableCharms.charmCostIndicator;

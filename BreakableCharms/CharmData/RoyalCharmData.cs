@@ -11,9 +11,9 @@ public class RoyalCharmData : CharmData
         get
         {
             //i dont trust people to set royal charm state
-            if (PlayerData.instance.GetBool(nameof(PlayerData.gotShadeCharm))) return 4;
+            if (Ref.PD.GetBool(nameof(PlayerData.gotShadeCharm))) return 4;
             
-            return PlayerData.instance.GetInt(nameof(PlayerData.royalCharmState));
+            return Ref.PD.GetInt(nameof(PlayerData.royalCharmState));
         }
     }
 

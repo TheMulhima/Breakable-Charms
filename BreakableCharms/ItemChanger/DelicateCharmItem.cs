@@ -18,7 +18,7 @@ public class DelicateCharmItem : AbstractItem
     public override void GiveImmediate(GiveInfo info)
     {
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
-        CharmIconList.Instance.spriteList[charmNum] = BreakableCharms.localSettings.BrokenCharms[charmNum].GetSprite();
+        BreakableCharms.SetAllCharmIcons();
         GameManager.instance.StartCoroutine(ResetPaidAfterAFrame());
     }
 
