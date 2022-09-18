@@ -16,10 +16,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public GlobalSettings OnSaveGlobal() => globalSettings;
 
     public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
-
-    private PlayMakerFSM charmFSM;
-    private static GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
-
+    
     public override void Initialize()
     {
         Instance ??= this;
@@ -30,7 +27,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         On.UIManager.StartNewGame += ICHook;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
         On.HeroController.Start += UnEquipBrokenCharms;
-        On.HeroController.Start += MakeBrokenCharmsUnEquippable;
+        On.HeroController.Start += DoFSMEdits;
         On.CharmIconList.Start += FixCharmSprites;
         ModHooks.AfterPlayerDeadHook += BreakCharmsOnPlayerDead;
         ModHooks.AfterTakeDamageHook += BreakCharmsOnTakeDamage;
@@ -60,110 +57,10 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         orig(self, permadeath, bossrush);
     }
 
-    private void MakeBrokenCharmsUnEquippable(On.HeroController.orig_Start orig, HeroController self)
+    private void DoFSMEdits(On.HeroController.orig_Start orig, HeroController self)
     {
         orig(self);
-        charmFSM = CharmUIGameObject.LocateMyFSM("UI Charms");
-        charmFSM.CreateEmptyState();
-        
-        var costgo = CharmUIGameObject.transform.Find("Details").Find("Cost");
-        var costFSM = costgo.gameObject.LocateMyFSM("Charm Details Cost");
-        var empty = costFSM.CreateEmptyState();
-
-        charmFSM.Intercept(new TransitionInterceptor
-        {
-            fromState = "Deactivate UI",
-            eventName = "FINISHED",
-            toStateDefault = "Empty", //should intercept is true so it doesnt matter
-            toStateCustom = "Empty", //i will handle the cases myself
-            shouldIntercept = () => true,
-            onIntercept = (_, _) =>
-            {
-                var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
-
-                if (localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
-                {
-                    localSettings.BrokenCharms[charmNum].isBroken = false;
-                    CharmIconList.Instance.spriteList[charmNum] = Dictionaries.CharmSpriteFromID[charmNum];
-                    CharmUIGameObject.transform.Find("Collected Charms").Find(charmNum.ToString()).Find("Sprite").GetComponent<SpriteRenderer>().sprite = Dictionaries.CharmSpriteFromID[charmNum];
-
-                    CharmUIGameObject.transform.Find("Details").Find("Detail Sprite").GetComponent<SpriteRenderer>().sprite = Dictionaries.CharmSpriteFromID[charmNum];
-                    CharmUIGameObject.transform.Find("Text Desc").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_DESC_{charmNum}", "UI");
-                    CharmUIGameObject.transform.Find("Text Name").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_NAME_{charmNum}", "UI");
-                    
-                    var notchCost = PlayerData.instance.GetInt($"charmCost_{charmNum}");
-                    costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value);
-                    costgo.Find("Text Cost").GetComponent<TextMeshPro>().text = "Cost";
-                    costgo.Find($"Cost 1").GetComponent<SpriteRenderer>().sprite = charmCostIndicator;
-                    
-                    for (int i = 1; i <= 6; i++)
-                    {
-                        var costx = costgo.Find($"Cost {i}");
-                        costx.localPosition = costx.localPosition.Y(costFSM.GetVariable<FsmFloat>(i <= notchCost ? "Present Y" : "Absent Y").Value);
-                    }
-                    
-                    charmFSM.SetState("Unequippable");
-                    
-                }
-                else
-                {
-                    //next state in chain, skips break //todo: implement fragile charms
-                    charmFSM.SetState("Royal?");
-                }
-                    
-            }
-        });
-
-        void OnIntercept(string originalEvent)
-        {
-            var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
-            if (localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
-            {
-                var costText = costgo.Find("Text Cost");
-                costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>("1 X").Value);
-                costText.gameObject.SetActive(true);
-                costText.GetComponent<MeshRenderer>().enabled = true;
-                foreach (MeshRenderer meshRenderer in costText.GetComponentsInChildren<MeshRenderer>(true))
-                {
-                    meshRenderer.enabled = true;
-                }
-
-                costText.GetComponent<TextMeshPro>().text = "Cost  200";
-                
-                
-                var geoIcon = costgo.Find($"Cost 1");
-                geoIcon.localPosition = geoIcon.localPosition.Y(costFSM.GetVariable<FsmFloat>("Present Y").Value + 0.05f);
-                geoIcon.GetComponent<SpriteRenderer>().sprite = geo;
-                
-                for (int i = 1; i <= 6; i++)
-                {
-                    if (i == 1) continue;
-                    var costx = costgo.Find($"Cost {i}");
-                    costx.localPosition = costx.localPosition.Y(costFSM.GetVariable<FsmFloat>("Absent Y").Value);
-                }
-            }
-
-            else
-            {
-                costgo.Find($"Cost 1").GetComponent<SpriteRenderer>().sprite = charmCostIndicator;
-                costgo.Find("Text Cost").GetComponent<TextMeshPro>().text = "Cost";
-                costFSM.SetState("Cost " + originalEvent);
-            }
-        }
-        
-        //there is a different event for each charm cost
-        for (int i = 0; i <= 6; i++)
-        {
-            costFSM.Intercept(new TransitionInterceptor
-            {
-                fromState = "Check",
-                eventName = i.ToString(),
-                toStateDefault = "Empty", //should intercept is true so it doesnt matter
-                toStateCustom = "Empty", //i will handle the cases myself
-                shouldIntercept = () => true,
-                onIntercept = (_, originalEvent) => OnIntercept(originalEvent)
-            });
-        }
+        FSMEdits.CharmFSMEdits();
     }
 
     private void UnEquipBrokenCharms(On.HeroController.orig_Start orig, HeroController self)
@@ -183,6 +80,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         orig(self);
         foreach (var (charm, _) in localSettings.BrokenCharms.Where(c => c.Value.isBroken))
         {
+            //todo: handle special cases
             CharmIconList.Instance.spriteList[charm] = brokenCharm;
         }
     }
@@ -283,17 +181,17 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     
     private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
     {
-        if (globalSettings.BreakOnHazardRespawn)
-        {
-            BreakEquippedCharms((s) => s is CharmState.Fragile);
-        }
+        BreakEquippedCharms((s) => s is CharmState.Fragile);
         yield return orig(self);
     }
     
+    //i dont want to import images for no reason
     private void PopulateCharmSpriteFromID()
     {
         Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        
         charmCostIndicator = allSprites.First(s => s.name == "charm_UI__0000_charm_cost_02_lit");
+        
         foreach (var (charmNum, spriteName) in Dictionaries.CharmSpriteNameFromID)
         {
             Dictionaries.CharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
@@ -326,7 +224,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
         PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
         
-        if (charmNum == (int)Charm.Grimmchild)
+        if(charmNum == (int)Charm.Grimmchild)
         {
             var gc = GameObject.FindWithTag("Grimmchild");
             if (gc != null)

@@ -23,11 +23,6 @@ public static class ModMenu
                 b => BreakableCharms.globalSettings.BreakOnDoubleDamage = b,
                 () => BreakableCharms.globalSettings.BreakOnDoubleDamage, 
                 Id:"DoubleDamage"),
-            
-            BoolOption("Break on hazard respawn", 
-                "Should charms break on hazard respawning.",
-                b => BreakableCharms.globalSettings.BreakOnHazardRespawn = b,
-                () => BreakableCharms.globalSettings.BreakOnHazardRespawn),
         });
 
         return MenuRef.GetMenuScreen(modlistmenu);

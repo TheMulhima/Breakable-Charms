@@ -69,6 +69,5 @@ public class LocalSettings
 public class GlobalSettings
 {
     public bool BreakOnAllDamage = false;
-    public bool BreakOnHazardRespawn = true;
     public bool BreakOnDoubleDamage = true;
 }
