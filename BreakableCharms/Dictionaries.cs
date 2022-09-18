@@ -2,9 +2,12 @@
 
 public static class Dictionaries
 {
-    public static readonly Dictionary<int, Sprite> CharmSpriteFromID = new();
+    public static readonly Dictionary<int, Sprite> UnbreakableCharmSpriteFromID = new();
+    public static readonly Dictionary<int, Sprite> FragileCharmSpriteFromID = new();
+    public static readonly Dictionary<int, Sprite> DelicateCharmSpriteFromID = new();
+    public static readonly Dictionary<int, Sprite> BrokenCharmSpriteFromID = new();
 
-        public static readonly Dictionary<int, string> CharmNameFromID = new()
+    public static readonly Dictionary<int, string> CharmNameFromID = new()
     {
         {1, "Gathering_Swarm"},
         {2, "Wayward_Compass"},
@@ -43,7 +46,7 @@ public static class Dictionaries
         {39, "Weaversong"},
         {40, "Grimmchild2"},
     };
-    public static readonly Dictionary<int, string> CharmSpriteNameFromID = new()
+    public static readonly Dictionary<int, string> CharmInGameSpriteNameFromID = new()
     {
         { 1, "charm_sprite_02" },
         { 2, "charm_sprite_03" },
@@ -67,9 +70,9 @@ public static class Dictionaries
         { 20, "_0001_charm_more_soul" },
         { 21, "charm_soul_up_large" },
         { 22, "_0009_charm_Hatchling" },
-        { 23, "_0002_charm_glass_heal" },
-        { 24, "_0003_charm_glass_geo" },
-        { 25, "_0002_charm_glass_attack_up" },
+        { 23, "_0002_charm_glass_heal_full" },
+        { 24, "_0003_charm_glass_geo_full" },
+        { 25, "_0002_charm_glass_attack_up_full" },
         { 26, "_0004_charm_charge_time_up" },
         { 27, "charm_blue_health_convert" },
         { 28, "charm_slug" },
@@ -80,10 +83,10 @@ public static class Dictionaries
         { 33, "charm_magic_cost_down" },
         { 34, "charm_crystal" },
         { 35, "charm_grub_blade" },
-        { 36, "charm_sprite_36" },
+        { 36, "charm_black" },
         { 37, "charm_grimm_sprint_master" },
         { 38, "charm_grimm_markoth_shield" },
         { 39, "charm_grimm_silkweaver" },
-        { 40, "charm_grimmkin_01" },
+        { 40, "charm_grimmkin_05" },
     };
 }

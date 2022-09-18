@@ -7,6 +7,9 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     internal static BreakableCharms Instance;
 
     public static Sprite brokenCharm, geo, charmCostIndicator;
+    //some special cases we have
+    public static Sprite grimmChild1, grimmChild2, grimmChild3, grimmChild4;
+    public static Sprite kingsFragment, queensFragment, kingSoul;
 
     public static LocalSettings localSettings { get; private set; } = new LocalSettings();
     public void OnLoadLocal(LocalSettings s) => localSettings = s;
@@ -16,13 +19,13 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public GlobalSettings OnSaveGlobal() => globalSettings;
 
     public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
-    
+
     public override void Initialize()
     {
         Instance ??= this;
 
-        brokenCharm = AssemblyUtils.GetSpriteFromResources("Images.BrokenCharm.png");
-        geo = AssemblyUtils.GetSpriteFromResources("Images.Geo.png", 100f);
+        brokenCharm = Extensions.LoadSpriteFromResources("Images.BrokenCharm");
+        geo = Extensions.LoadSpriteFromResources("Images.Geo", 100f);
 
         On.UIManager.StartNewGame += ICHook;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
@@ -33,7 +36,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         ModHooks.AfterTakeDamageHook += BreakCharmsOnTakeDamage;
         On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
 
-        PopulateCharmSpriteFromID();
+        LoadSprites();
 
         //todo: make charm fixing UI
         //todo: handle all sprites for gc
@@ -41,7 +44,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         //todo: add special handling for currently fragile charms
         //todo: rename to delicate, fragile, unbreakable
         //todo: rando integration
-        
+
         ModHooks.NewGameHook += () =>
         {
             for (int i = 1; i <= 40; i++)
@@ -81,7 +84,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         foreach (var (charm, _) in localSettings.BrokenCharms.Where(c => c.Value.isBroken))
         {
             //todo: handle special cases
-            CharmIconList.Instance.spriteList[charm] = brokenCharm;
+            CharmIconList.Instance.spriteList[charm] = localSettings.BrokenCharms[charm].GetSprite();
         }
     }
 
@@ -91,73 +94,28 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         {
             if(localSettings.BrokenCharms.TryGetValue(key.GetCharmNumFromKey(), out var charmData))
             {
-                if (key.Contains(CharmUIDef.Repair_Key))
+                if (key.StartsWith("BreakableCharms"))
                 {
-                    orig = Extensions.GetOriginalText(key, sheettitle,CharmUIDef.Repair_Key);
-                    string prefix = charmData.charmState switch
-                    {
-                        CharmState.Fragile => "Fragile ",
-                        CharmState.Durable => "Durable ",
-                        _ => ""
-                    };
-                    return prefix + orig + " (Repair)";
+                    return charmData.GetShopName(key, sheettitle);
                 }
-                if (key.Contains(CharmUIDef.Durable_Key))
+                else
                 {
-                    orig = Extensions.GetOriginalText(key, sheettitle,CharmUIDef.Durable_Key);
-                    return "Durable " + orig;
-                }
-                if (key.Contains(CharmUIDef.Unbreakable_Key))
-                {
-                    orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Unbreakable_Key);
-                    return "Unbreakable " + orig;
+                    return charmData.GetInventoryName(key, sheettitle, orig);
                 }
 
-                //in charms menu
-                if (charmData.isBroken) return "Broken " + orig;
-                
-                switch (charmData.charmState)
-                {
-                    case CharmState.Fragile:
-                        return "Fragile " + orig;
-                    case CharmState.Durable:
-                        return "Durable " + orig;
-                    case CharmState.Unbreakable:
-                        return "Unbreakable " + orig;
-                }
             }
         }
         if (key.Contains("CHARM_DESC"))
         {
             if(localSettings.BrokenCharms.TryGetValue(key.GetCharmNumFromKey(), out var charmData))
             {
-                if (key.Contains(CharmUIDef.Repair_Key))
+                if (key.StartsWith("BreakableCharms"))
                 {
-                    orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Repair_Key);
-                    return "Repair the charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                    return charmData.GetShopDesc(key, sheettitle);
                 }
-                if (key.Contains(CharmUIDef.Durable_Key))
+                else
                 {
-                    orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Durable_Key);
-                    return "A durable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
-                }
-                if (key.Contains(CharmUIDef.Unbreakable_Key))
-                {
-                    orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Unbreakable_Key);
-                    return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
-                }
-
-                //in charms menu
-                if (charmData.isBroken) return "Click enter to repair.\nCost: 200 geo";
-                
-                switch (charmData.charmState)
-                {
-                    case CharmState.Fragile:
-                        return "A fragile charm that " + orig.MakeFirstCharLower();
-                    case CharmState.Durable:
-                        return "A durable charm that " + orig.MakeFirstCharLower();
-                    case CharmState.Unbreakable:
-                        return "An unbreakable charm that " + orig.MakeFirstCharLower();
+                    return charmData.GetInventoryDesc(key, sheettitle, orig);
                 }
             }
         }
@@ -167,35 +125,22 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     
     private void BreakCharmsOnPlayerDead()
     {
-        BreakEquippedCharms(s => s is CharmState.Durable or CharmState.Fragile);
+        BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate);
     }
     
     private int BreakCharmsOnTakeDamage(int hazardtype, int damageamount)
     {
         if (globalSettings.BreakOnAllDamage && damageamount > 0 || globalSettings.BreakOnDoubleDamage && damageamount > 2)
         {
-            BreakEquippedCharms(s => s is CharmState.Fragile);
+            BreakEquippedCharms(s => s is CharmState.Delicate);
         }
         return damageamount;
     }
     
     private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
     {
-        BreakEquippedCharms((s) => s is CharmState.Fragile);
+        BreakEquippedCharms((s) => s is CharmState.Delicate);
         yield return orig(self);
-    }
-    
-    //i dont want to import images for no reason
-    private void PopulateCharmSpriteFromID()
-    {
-        Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
-        
-        charmCostIndicator = allSprites.First(s => s.name == "charm_UI__0000_charm_cost_02_lit");
-        
-        foreach (var (charmNum, spriteName) in Dictionaries.CharmSpriteNameFromID)
-        {
-            Dictionaries.CharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
-        }
     }
 
     private void BreakEquippedCharms(Func<CharmState, bool> hasCorrectCharmState)
@@ -220,7 +165,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     {
         localSettings.BrokenCharms[charmNum].isBroken = true;
         CharmUtil.UnequipCharm(charmNum);
-        CharmIconList.Instance.spriteList[charmNum] = brokenCharm;
+        CharmIconList.Instance.spriteList[charmNum] = localSettings.BrokenCharms[charmNum].GetSprite();
         PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
         PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
         
@@ -232,6 +177,25 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
                 UnityEngine.Object.Destroy(gc);
             }
             
+        }
+    }
+
+    public void LoadSprites()
+    {
+        Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        
+        charmCostIndicator = allSprites.First(s => s.name == "charm_UI__0000_charm_cost_02_lit");
+        grimmChild1 = allSprites.First(s => s.name == "charm_grimmkin_01");
+        grimmChild2 = allSprites.First(s => s.name == "charm_grimmkin_02");
+        grimmChild3 = allSprites.First(s => s.name == "charm_grimmkin_03");
+        grimmChild4 = allSprites.First(s => s.name == "charm_grimmkin_04");
+        kingsFragment = allSprites.First(s => s.name == "charm_white_left");
+        queensFragment = allSprites.First(s => s.name == "charm_white_right");
+        kingSoul = allSprites.First(s => s.name == "charm_white_full");
+
+        foreach (var (charmNum, spriteName) in Dictionaries.CharmInGameSpriteNameFromID)
+        {
+            Dictionaries.UnbreakableCharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
         }
     }
 

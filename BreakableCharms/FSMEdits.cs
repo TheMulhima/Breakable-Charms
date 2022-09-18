@@ -103,7 +103,7 @@ public static class FSMEdits
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
                         
         //todo: handle different cases
-        Sprite newSprite = Dictionaries.CharmSpriteFromID[charmNum];
+        Sprite newSprite = BreakableCharms.localSettings.BrokenCharms[charmNum].GetSprite();
                         
         CharmIconList.Instance.spriteList[charmNum] = newSprite;
         CharmUIGameObject.transform.Find("Collected Charms").Find(charmNum.ToString()).Find("Sprite").ChangeSpriteRenderer(newSprite);

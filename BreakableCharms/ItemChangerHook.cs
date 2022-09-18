@@ -29,14 +29,14 @@ public static class ItemChangerHook
 
         foreach (var (charmNum, _) in Dictionaries.CharmNameFromID)
         {
-            charmList.Add(new DurableCharmItem
+            charmList.Add(new FragileCharmItem
             {
                 charmNum = charmNum,
                 name = Dictionaries.CharmNameFromID[charmNum].Replace("_", " "),
                 UIDef = new CharmUIDef
                 {
                     charmNum = charmNum,
-                    StateAfterPurchase = CharmState.Durable
+                    StateAfterPurchase = CharmState.Fragile
                 },
                 tags = new List<Tag>
                 {
@@ -61,14 +61,14 @@ public static class ItemChangerHook
 
         foreach (var (charmNum, _) in Dictionaries.CharmNameFromID)
         {
-            charmList.Add(new DurableCharmItem
+            charmList.Add(new FragileCharmItem
             {
                 charmNum = charmNum,
                 name = Dictionaries.CharmNameFromID[charmNum].Replace("_", " "),
                 UIDef = new CharmUIDef
                 {
                     charmNum = charmNum,
-                    StateAfterPurchase = CharmState.Durable
+                    StateAfterPurchase = CharmState.Fragile
                 },
                 tags = new List<Tag>
                 {
@@ -121,7 +121,7 @@ public static class ItemChangerHook
                     new HasCharmStateRequirement()
                     {
                         charmNum = charmNum,
-                        requiredState = CharmState.Durable,
+                        requiredState = CharmState.Fragile,
                     },
                     new ShopPersistentTag
                     {
