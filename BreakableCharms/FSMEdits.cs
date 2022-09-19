@@ -32,6 +32,16 @@ public static class FSMEdits
                     if (Ref.PD.GetInt(nameof(PlayerData.geo)) >= 200)
                     {
                         RepairCharm(costgo, costFSM, charmNum);
+                        Ref.PD.IntAdd(nameof(PlayerData.geo), -200);
+                        BreakableCharms.AudioPlayer.pitch = 1f;
+                        BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuySuccess);
+                    }
+                    else
+                    {
+                        BreakableCharms.AudioPlayer.pitch = 1.25f;
+                        BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuyFail);
+                        BreakableCharms.AudioPlayer.pitch = 0.85f;
+                        BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuyFail);
                     }
                     
                     charmFSM.SetState("Unequippable");
@@ -103,7 +113,7 @@ public static class FSMEdits
     private static void RepairCharm(Transform costgo, PlayMakerFSM costFSM ,int charmNum)
     {
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
-        BreakableCharms.SetAllCharmIcons(changeDetails:true);
+        BreakableCharms.SetAllCharmIcons(changeDetails:true, charmNumOfDetails:charmNum);
         
         var notchCost = Ref.PD.GetInt($"charmCost_{charmNum}");
         costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value);

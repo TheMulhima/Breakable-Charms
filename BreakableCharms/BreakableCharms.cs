@@ -11,6 +11,9 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public static Sprite grimmChild1, grimmChild2, grimmChild3, grimmChild4;
     public static Sprite kingsFragment, queensFragment, kingSoul;
 
+    public static AudioClip charmBuySuccess, charmBuyFail;
+    public static AudioSource AudioPlayer;
+
     public static LocalSettings localSettings { get; private set; } = new LocalSettings();
     public void OnLoadLocal(LocalSettings s) => localSettings = s;
     public LocalSettings OnSaveLocal() => localSettings;
@@ -23,6 +26,10 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public override void Initialize()
     {
         Instance ??= this;
+
+        var go = new GameObject();
+        UnityEngine.Object.DontDestroyOnLoad(go);
+        AudioPlayer = go.AddComponent<AudioSource>();
 
         brokenCharm = Extensions.LoadSpriteFromResources("Images.Misc.BrokenCharm");
         geo = Extensions.LoadSpriteFromResources("Images.Misc.Geo", 100f);
@@ -219,6 +226,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public void LoadSprites()
     {
         Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        AudioClip[] allAudioClips = Resources.FindObjectsOfTypeAll<AudioClip>();
         
         charmCostIndicator = allSprites.First(s => s.name == "charm_UI__0000_charm_cost_02_lit");
         grimmChild1 = allSprites.First(s => s.name == "charm_grimmkin_01");
@@ -233,6 +241,9 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         {
             Dictionaries.UnbreakableCharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
         }
+
+        charmBuySuccess = allAudioClips.First(a => a.name == "shiny_item_pickup");
+        charmBuyFail = allAudioClips.First(a => a.name == "sword_hit_reject");
     }
     private void SetIcons_CountCharms(On.PlayerData.orig_CountCharms orig, PlayerData self)
     {
@@ -265,7 +276,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         return orig;
     }
 
-    public static void SetAllCharmIcons(bool changeDetails = false)
+    public static void SetAllCharmIcons(bool changeDetails = false, int charmNumOfDetails = 0)
     {
         if (CharmIconList.Instance != null)
         {
@@ -289,7 +300,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
             if (FSMEdits.CharmUIGameObject != null) 
             {
                 FSMEdits.CharmUIGameObject.transform.Find("Collected Charms").Find(charmNum.ToString()).Find("Sprite").ChangeSpriteRenderer(charmData.GetSprite());
-                if (changeDetails)
+                if (changeDetails && charmNum == charmNumOfDetails)
                 {
                     FSMEdits.CharmUIGameObject.transform.Find("Details").Find("Detail Sprite").ChangeSpriteRenderer(charmData.GetSprite());
                     FSMEdits.CharmUIGameObject.transform.Find("Text Desc").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_DESC_{charmNum}", "UI"); 
