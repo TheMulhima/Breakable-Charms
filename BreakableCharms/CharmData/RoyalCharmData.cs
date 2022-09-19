@@ -1,6 +1,4 @@
 ﻿namespace BreakableCharms;
-
-//todo: check if you can requip black charm if unequipped
 public class RoyalCharmData : CharmData
 {
     public RoyalCharmData():base(36) {}

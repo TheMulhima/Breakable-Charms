@@ -53,8 +53,6 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         LoadSprites();
 
         //todo: check if voidheart can be unequipped on death
-        //todo: add sound for repairing charms
-        //todo: make text grey if people are broke
         //todo: rando integration
 
         ModHooks.NewGameHook += () =>
