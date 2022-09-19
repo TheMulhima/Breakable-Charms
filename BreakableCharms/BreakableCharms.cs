@@ -38,11 +38,13 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
         On.PlayerData.CountCharms += SetIcons_CountCharms;
         ModHooks.SetPlayerIntHook += SetIcons_SetIntHook;
+        ModHooks.GetPlayerIntHook += SetIcons_GetIntHook;
+        ModHooks.GetPlayerVariableHook += SetIcons_GetVariableHook;
+        ModHooks.SetPlayerBoolHook += DontSetBrokenBools;
+        On.CharmDisplay.Start += FixSprites;
 
         LoadSprites();
 
-        //todo: fix charm buying not working
-        //todo: fix royal charm not overriding
         //todo: check if voidheart can be unequipped on death
         //todo: add sound for repairing charms
         //todo: make text grey if people are broke
@@ -62,6 +64,27 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
                 Ref.PD.charmCost_40 = 3;
             }
         };
+    }
+
+    private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)
+    {
+        self.brokenGlassHP = localSettings.BrokenCharms[(int)Charm.UnbreakableHeart].GetSprite();
+        self.brokenGlassGeo = localSettings.BrokenCharms[(int)Charm.UnbreakableGreed].GetSprite();;
+        self.brokenGlassAttack = localSettings.BrokenCharms[(int)Charm.UnbreakableStrength].GetSprite();
+        self.whiteCharm = localSettings.BrokenCharms[(int)Charm.VoidHeart].GetSprite();
+        self.blackCharm = localSettings.BrokenCharms[(int)Charm.VoidHeart].GetSprite();
+        orig(self);
+        SetAllCharmIcons();
+    }
+
+    private bool DontSetBrokenBools(string name, bool orig)
+    {
+        return !new[]
+        {
+            nameof(PlayerData.brokenCharm_23),
+            nameof(PlayerData.brokenCharm_24),
+            nameof(PlayerData.brokenCharm_25)
+        }.Contains(name) && orig;
     }
 
     private void ICHook(On.UIManager.orig_StartNewGame orig, UIManager self, bool permadeath, bool bossrush)
@@ -224,28 +247,56 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         }
         return orig;
     }
-
-    public static void SetAllCharmIcons()
+    private int SetIcons_GetIntHook(string name, int orig)
     {
+        if (name == nameof(PlayerData.charmsOwned))
+        {
+            SetAllCharmIcons();
+        }
+        return orig;
+    }
+    
+    private object SetIcons_GetVariableHook(Type type, string name, object orig)
+    {
+        if (type == typeof(List<int>) && name == nameof(PlayerData.equippedCharms))
+        {
+            SetAllCharmIcons();
+        }
+        return orig;
+    }
+
+    public static void SetAllCharmIcons(bool changeDetails = false)
+    {
+        if (CharmIconList.Instance != null)
+        {
+            CharmIconList.Instance.grimmchildLevel1 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel2 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel3 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel4 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.nymmCharm = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
+
+            CharmIconList.Instance.unbreakableGreed = localSettings.BrokenCharms[(int)Charm.UnbreakableGreed].GetSprite();
+            CharmIconList.Instance.unbreakableHeart = localSettings.BrokenCharms[(int)Charm.UnbreakableHeart].GetSprite();
+            CharmIconList.Instance.unbreakableStrength = localSettings.BrokenCharms[(int)Charm.UnbreakableStrength].GetSprite();
+        }
+        
         foreach (var (charmNum, charmData) in localSettings.BrokenCharms)
         {
-            CharmIconList.Instance.spriteList[charmNum] = charmData.GetSprite();
-            FSMEdits.CharmUIGameObject.transform.Find("Collected Charms").Find(charmNum.ToString()).Find("Sprite").ChangeSpriteRenderer(charmData.GetSprite());
-            FSMEdits.CharmUIGameObject.transform.Find("Details").Find("Detail Sprite").ChangeSpriteRenderer(charmData.GetSprite());
-                        
-            FSMEdits.CharmUIGameObject.transform.Find("Text Desc").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_DESC_{charmNum}", "UI");
-            FSMEdits.CharmUIGameObject.transform.Find("Text Name").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_NAME_{charmNum}", "UI");
+            if (CharmIconList.Instance != null)
+            {
+                CharmIconList.Instance.spriteList[charmNum] = charmData.GetSprite();
+            }
+            if (FSMEdits.CharmUIGameObject != null) 
+            {
+                FSMEdits.CharmUIGameObject.transform.Find("Collected Charms").Find(charmNum.ToString()).Find("Sprite").ChangeSpriteRenderer(charmData.GetSprite());
+                if (changeDetails)
+                {
+                    FSMEdits.CharmUIGameObject.transform.Find("Details").Find("Detail Sprite").ChangeSpriteRenderer(charmData.GetSprite());
+                    FSMEdits.CharmUIGameObject.transform.Find("Text Desc").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_DESC_{charmNum}", "UI"); 
+                    FSMEdits.CharmUIGameObject.transform.Find("Text Name").GetComponent<TextMeshPro>().text = Language.Language.Get($"CHARM_NAME_{charmNum}", "UI");
+                }
+            }
         }
-
-        CharmIconList.Instance.grimmchildLevel1 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-        CharmIconList.Instance.grimmchildLevel2 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-        CharmIconList.Instance.grimmchildLevel3 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-        CharmIconList.Instance.grimmchildLevel4 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-        CharmIconList.Instance.nymmCharm = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-
-        CharmIconList.Instance.unbreakableGreed = localSettings.BrokenCharms[(int)Charm.UnbreakableGreed].GetSprite();
-        CharmIconList.Instance.unbreakableHeart = localSettings.BrokenCharms[(int)Charm.UnbreakableHeart].GetSprite();
-        CharmIconList.Instance.unbreakableStrength = localSettings.BrokenCharms[(int)Charm.UnbreakableStrength].GetSprite();
     }
 
     public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates) =>

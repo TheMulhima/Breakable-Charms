@@ -29,7 +29,6 @@ public static class Extensions
     {
         if (LoadedSprites.TryGetValue(path, out var loadedSprite)) return loadedSprite;
 
-        Modding.Logger.Log($"Loading {path}");
         var sprite = GetSpriteFromResources(path + ".png", ppu);
         LoadedSprites[path] = sprite;
         return sprite;

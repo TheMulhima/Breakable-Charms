@@ -3,7 +3,7 @@
 //todo: check if you can requip black charm if unequipped
 public class RoyalCharmData : CharmData
 {
-    public RoyalCharmData(int _charmNum):base(_charmNum) {}
+    public RoyalCharmData():base(36) {}
     public override bool HasSpecialSprite => true;
 
     public int RoyalCharmState

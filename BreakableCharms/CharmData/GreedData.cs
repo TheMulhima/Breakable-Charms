@@ -2,7 +2,7 @@
 
 public class GreedData:CharmData
 {
-    public GreedData(int _charmNum):base(_charmNum) {}
+    public GreedData():base(24) {}
     public override string GetShopName(string key, string sheettitle)
     {
         if (key.Contains(CharmUIDef.Repair_Key))

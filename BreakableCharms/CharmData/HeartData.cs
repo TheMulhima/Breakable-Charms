@@ -2,7 +2,7 @@
 
 public class HeartData:CharmData
 {
-    public HeartData(int _charmNum):base(_charmNum) {}
+    public HeartData():base(23) {}
     public override string GetShopName(string key, string sheettitle)
     {
         if (key.Contains(CharmUIDef.Repair_Key))

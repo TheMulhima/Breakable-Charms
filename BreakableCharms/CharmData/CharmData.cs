@@ -1,4 +1,6 @@
-﻿namespace BreakableCharms;
+﻿using Logger = Modding.Logger;
+
+namespace BreakableCharms;
 
 public enum CharmState
 {
@@ -27,7 +29,6 @@ public class CharmData
 
     public virtual Sprite GetSprite()
     {
-        Modding.Logger.Log($"Getting sprite for {charmNum}");
         if (isBroken) return Dictionaries.BrokenCharmSpriteFromID[charmNum];
         
         return charmState switch

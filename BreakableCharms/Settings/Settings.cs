@@ -37,9 +37,9 @@ public class LocalSettings
         { 20, new CharmData(20) },
         { 21, new CharmData(21) },
         { 22, new CharmData(22) },
-        { 23, new HeartData(23) },
-        { 24, new GreedData(24) },
-        { 25, new StrengthData(25) },
+        { 23, new HeartData() },
+        { 24, new GreedData() },
+        { 25, new StrengthData() },
         { 26, new CharmData(26) },
         { 27, new CharmData(27) },
         { 28, new CharmData(28) },
@@ -50,11 +50,11 @@ public class LocalSettings
         { 33, new CharmData(33) },
         { 34, new CharmData(34) },
         { 35, new CharmData(35) },
-        { 36, new RoyalCharmData(36) },
+        { 36, new RoyalCharmData() },
         { 37, new CharmData(37) },
         { 38, new CharmData(38) },
         { 39, new CharmData(39) },
-        { 40, new GrimmChildData(40) },
+        { 40, new GrimmChildData() },
     };
 }
 

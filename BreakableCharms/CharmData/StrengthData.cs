@@ -2,7 +2,7 @@
 
 public class StrengthData:CharmData
 {
-    public StrengthData(int _charmNum):base(_charmNum) {}
+    public StrengthData():base(25) {}
     public override string GetShopName(string key, string sheettitle)
     {
         if (key.Contains(CharmUIDef.Repair_Key))

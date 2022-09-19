@@ -59,6 +59,8 @@ public static class FSMEdits
                 onIntercept = (_, originalEventName) => DisplayRepairCost(originalEventName, costgo, costFSM)
             });
         }
+        
+        charmFSM.AddCustomAction("Idle Collection", () => BreakableCharms.SetAllCharmIcons());
     }
     
     private static void DisplayRepairCost(string originalEventName, Transform costgo, PlayMakerFSM costFSM)
@@ -101,9 +103,7 @@ public static class FSMEdits
     private static void RepairCharm(Transform costgo, PlayMakerFSM costFSM ,int charmNum)
     {
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
-                        
-        //todo: handle different cases
-        BreakableCharms.SetAllCharmIcons();
+        BreakableCharms.SetAllCharmIcons(changeDetails:true);
         
         var notchCost = Ref.PD.GetInt($"charmCost_{charmNum}");
         costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value);
