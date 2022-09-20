@@ -76,7 +76,8 @@ public static class FSMEdits
     private static void DisplayRepairCost(string originalEventName, Transform costgo, PlayMakerFSM costFSM)
     {
         var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
-        if (BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
+        if (Ref.PD.GetBool($"gotCharm_{charmNum}") &&
+            BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
         {
             var costText = costgo.Find("Text Cost");
             costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>("1 X").Value);

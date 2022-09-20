@@ -13,14 +13,14 @@ public static class ItemChangerHook
                 dungDiscount = true,
                 objectName = "Leg_Eater",
                 fsmName = "Conversation Control",
-                defaultShopItems = DefaultShopItems.None,
+                defaultShopItems = DefaultShopItems.LegEaterCharms,
                 name = "Leg_Eater",
                 sceneName = "Fungus2_26",
                 flingType = FlingType.DirectDeposit,
                 tags = null,
                 requiredPlayerDataBool = ""
             },
-            defaultShopItems = DefaultShopItems.None,
+            defaultShopItems = DefaultShopItems.LegEaterCharms,
             dungDiscount = true,
             requiredPlayerDataBool = string.Empty
         };
