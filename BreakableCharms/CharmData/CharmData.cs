@@ -29,6 +29,8 @@ public class CharmData
 
     public virtual Sprite GetSprite()
     {
+        if (Dictionaries.BrokenCharmSpriteFromID.Count == 0) return Dictionaries.UnbreakableCharmSpriteFromID[charmNum];
+       
         if (isBroken) return Dictionaries.BrokenCharmSpriteFromID[charmNum];
         
         return charmState switch
@@ -113,11 +115,11 @@ public class CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A Delicate charm that " + orig.MakeFirstCharLower();
+                return "A Delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Fragile:
-                return "A Fragile charm that " + orig.MakeFirstCharLower();
+                return "A Fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Unbreakable:
-                return "An unbreakable charm that " + orig.MakeFirstCharLower();
+                return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
 
         return "";

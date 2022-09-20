@@ -39,6 +39,8 @@ public class RoyalCharmData : CharmData
         
     public override Sprite GetSprite()
     {
+        if (RoyalCharmState == 0) return Dictionaries.UnbreakableCharmSpriteFromID[charmNum];
+        
         if (isBroken)
         {
             return BrokenSprites[RoyalCharmState];

@@ -55,7 +55,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         //todo: check if voidheart can be unequipped on death
         //todo: rando integration
 
-        ModHooks.NewGameHook += () =>
+        /*ModHooks.NewGameHook += () =>
         {
             for (int i = 1; i <= 40; i++)
             {
@@ -68,7 +68,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
                 Ref.PD.grimmChildLevel = 5;
                 Ref.PD.charmCost_40 = 3;
             }
-        };
+        };*/
     }
 
     private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)

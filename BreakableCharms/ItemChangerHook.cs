@@ -13,14 +13,14 @@ public static class ItemChangerHook
                 dungDiscount = true,
                 objectName = "Leg_Eater",
                 fsmName = "Conversation Control",
-                defaultShopItems = DefaultShopItems.LegEaterCharms | DefaultShopItems.LegEaterRepair,
+                defaultShopItems = DefaultShopItems.None,
                 name = "Leg_Eater",
                 sceneName = "Fungus2_26",
                 flingType = FlingType.DirectDeposit,
                 tags = null,
                 requiredPlayerDataBool = ""
             },
-            defaultShopItems = DefaultShopItems.LegEaterCharms | DefaultShopItems.LegEaterRepair,
+            defaultShopItems = DefaultShopItems.None,
             dungDiscount = true,
             requiredPlayerDataBool = string.Empty
         };
@@ -40,51 +40,19 @@ public static class ItemChangerHook
                 },
                 tags = new List<Tag>
                 {
-                    new CostTag()
-                    {
-                        Cost = new MultiCost(new GeoCost(600),
-                            new NotBrokenCost { charmNum = charmNum, })
-                    },
-                    new HasCharmRequirement()
-                    {
-                        charmNum = charmNum
-                    },
-
-                    new ShopPersistentTag
-                    {
-                        persistence = Persistence.Single
-                    },
-
-                }
-            });
-        }
-
-        foreach (var (charmNum, _) in Dictionaries.CharmNameFromID)
-        {
-            charmList.Add(new FragileCharmItem
-            {
-                charmNum = charmNum,
-                name = Dictionaries.CharmNameFromID[charmNum].Replace("_", " "),
-                UIDef = new CharmUIDef
-                {
-                    charmNum = charmNum,
-                    StateAfterPurchase = CharmState.Fragile
-                },
-                tags = new List<Tag>
-                {
-                    new CostTag()
+                    new CostTag
                     { 
                         Cost = new MultiCost(new GeoCost(600), 
                         new NotBrokenCost { charmNum = charmNum, })
                     },
-                    new HasCharmRequirement()
+                    new HasCharmRequirement
                     {
                         charmNum = charmNum
                     },
-                    new HasCharmStateRequirement()
+                    new HasCharmStateRequirement
                     {
                         charmNum = charmNum,
-                        requiredState = CharmState.Fragile,
+                        requiredState = CharmState.Delicate,
                     },
                     
                     new ShopPersistentTag
@@ -109,16 +77,16 @@ public static class ItemChangerHook
                 },
                 tags = new List<Tag>
                 {
-                    new CostTag()
+                    new CostTag
                     {
                         Cost = new MultiCost(new GeoCost(1500),
                             new NotBrokenCost { charmNum = charmNum, })
                     },
-                    new HasCharmRequirement()
+                    new HasCharmRequirement
                     {
                         charmNum = charmNum
                     },
-                    new HasCharmStateRequirement()
+                    new HasCharmStateRequirement
                     {
                         charmNum = charmNum,
                         requiredState = CharmState.Fragile,
