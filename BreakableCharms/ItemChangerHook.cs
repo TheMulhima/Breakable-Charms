@@ -1,10 +1,17 @@
-﻿namespace BreakableCharms;
+﻿using ItemChanger.Modules;
+
+namespace BreakableCharms;
 
 public static class ItemChangerHook
 {
     public static void HookIC()
     {
-        ItemChangerMod.CreateSettingsProfile(overwrite: false, createDefaultModules: true);
+        ItemChangerMod.CreateSettingsProfile(overwrite: false, createDefaultModules: false);
+        
+        //i need legeater to remain where he is
+        ItemChangerMod.Modules.GetOrAdd<PreventLegEaterDeath>();
+        //if player dies with voidheart, i want it to be unequippable
+        ItemChangerMod.Modules.GetOrAdd<RemoveVoidHeartEffects>();
 
         ShopPlacement LegEaterShopPlacement = new("Leg_Eater")
         {
