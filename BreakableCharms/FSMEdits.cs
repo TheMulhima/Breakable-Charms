@@ -6,7 +6,9 @@ public static class FSMEdits
 {
     public static GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
     private static PlayMakerFSM charmFSM;
-    
+
+    public static string CharmNumVariableName = "Current Item Number";
+
     public static void CharmFSMEdits()
     {
         charmFSM = CharmUIGameObject.LocateMyFSM("UI Charms");
@@ -15,6 +17,10 @@ public static class FSMEdits
         var costgo = CharmUIGameObject.transform.Find("Details").Find("Cost");
         var costFSM = costgo.gameObject.LocateMyFSM("Charm Details Cost");
         costFSM.CreateEmptyState();
+        
+        //SFCore.Utils.FsmUtil.MakeLog(charmFSM);
+
+        //return;
 
         charmFSM.Intercept(new TransitionInterceptor
         {
@@ -25,14 +31,23 @@ public static class FSMEdits
             shouldIntercept = () => true,
             onIntercept = (_, _) =>
             {
-                var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
+                /*Modding.Logger.Log($"Break Check => CIN:{charmFSM.GetVariable<FsmInt>("Current Item Number").Value} " +
+                                   $"CN:{charmFSM.GetVariable<FsmInt>("Charm Num").Value} " +
+                                   $"ITA:{charmFSM.GetVariable<FsmInt>("Item Number Alt").Value} " +
+                                   $"CP:{charmFSM.GetVariable<FsmInt>("Collection Pos").Value} " +
+                                   $"CoolN:{charmFSM.GetVariable<FsmInt>("Cool Number").Value} " +
+                                   $"TLN:{charmFSM.GetVariable<FsmInt>("Target List Num").Value} " +
+                                   $"NCI: {charmFSM.GetVariable<FsmInt>("New Charm ID").Value}");*/
+                var charmNum = charmFSM.GetVariable<FsmInt>(CharmNumVariableName).Value;
 
-                if (BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
+                if (BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && 
+                    charmData.isBroken &&
+                    charmFSM.GetVariable<FsmBool>("Idle Collection").Value)
                 {
-                    if (Ref.PD.GetInt(nameof(PlayerData.geo)) >= 200)
+                    if (PlayerData.instance.GetInt(nameof(PlayerData.geo)) >= 200)
                     {
                         RepairCharm(costgo, costFSM, charmNum);
-                        Ref.PD.IntAdd(nameof(PlayerData.geo), -200);
+                        PlayerData.instance.IntAdd(nameof(PlayerData.geo), -200);
                         BreakableCharms.AudioPlayer.pitch = 1f;
                         BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuySuccess);
                     }
@@ -75,9 +90,20 @@ public static class FSMEdits
     
     private static void DisplayRepairCost(string originalEventName, Transform costgo, PlayMakerFSM costFSM)
     {
-        var charmNum = charmFSM.GetVariable<FsmInt>("Current Item Number").Value;
-        if (Ref.PD.GetBool($"gotCharm_{charmNum}") &&
-            BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) && charmData.isBroken)
+        /*Modding.Logger.Log($"Cost Display => CIN:{charmFSM.GetVariable<FsmInt>("Current Item Number").Value} " +
+                           $"CN:{charmFSM.GetVariable<FsmInt>("Charm Num").Value} " +
+                           $"ITA:{charmFSM.GetVariable<FsmInt>("Item Number Alt").Value} " +
+                           $"CP:{charmFSM.GetVariable<FsmInt>("Collection Pos").Value} " +
+                           $"CoolN:{charmFSM.GetVariable<FsmInt>("Cool Number").Value} " +
+                           $"TLN:{charmFSM.GetVariable<FsmInt>("Target List Num").Value} " +
+                           $"NCI: {charmFSM.GetVariable<FsmInt>("New Charm ID").Value}");
+                           */
+        
+        var charmNum = charmFSM.GetVariable<FsmInt>(CharmNumVariableName).Value;
+        if (PlayerData.instance.GetBool($"gotCharm_{charmNum}") &&
+            BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) &&
+            charmData.isBroken &&
+            charmFSM.GetVariable<FsmBool>("Idle Collection").Value)
         {
             var costText = costgo.Find("Text Cost");
             costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>("1 X").Value);
@@ -116,7 +142,7 @@ public static class FSMEdits
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
         BreakableCharms.SetAllCharmIcons(changeDetails:true, charmNumOfDetails:charmNum);
         
-        var notchCost = Ref.PD.GetInt($"charmCost_{charmNum}");
+        var notchCost = PlayerData.instance.GetInt($"charmCost_{charmNum}");
         costgo.localPosition = costgo.localPosition.X(costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value);
         costgo.Find("Text Cost").GetComponent<TextMeshPro>().text = "Cost";
         costgo.Find($"Cost 1").GetComponent<SpriteRenderer>().sprite = BreakableCharms.charmCostIndicator;
