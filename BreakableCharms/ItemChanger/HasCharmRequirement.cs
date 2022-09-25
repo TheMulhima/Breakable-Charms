@@ -4,5 +4,5 @@ public class HasCharmRequirement:Tag, IShopRequirementTag
 {
     public int charmNum;
 
-    public bool MeetsRequirement => Ref.PD.GetBool($"gotCharm_{charmNum}");
+    public bool MeetsRequirement => PlayerData.instance.GetBool($"gotCharm_{charmNum}");
 }

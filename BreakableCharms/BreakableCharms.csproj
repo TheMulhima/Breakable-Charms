@@ -36,9 +36,6 @@
         <Reference Include="MonoMod.Utils, Version=21.4.29.1, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\MonoMod.Utils.dll</HintPath>
         </Reference>
-        <Reference Include="Osmi">
-          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods\Osmi\Osmi.dll</HintPath>
-        </Reference>
         <Reference Include="PlayMaker, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\PlayMaker.dll</HintPath>
         </Reference>

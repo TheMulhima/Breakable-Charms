@@ -49,7 +49,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         ModHooks.GetPlayerVariableHook += SetIcons_GetVariableHook;
         ModHooks.SetPlayerBoolHook += DontSetBrokenBools;
         On.CharmDisplay.Start += FixSprites;
-
+ 
         LoadSprites();
 
         //todo: check if voidheart can be unequipped on death
@@ -59,25 +59,25 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         {
             for (int i = 1; i <= 40; i++)
             {
-                Ref.PD.SetBoolInternal("gotCharm_" + i, true);
-                Ref.PD.hasCharm = true;
-                Ref.PD.charmsOwned = 40;
-                Ref.PD.royalCharmState = 4;
-                Ref.PD.gotShadeCharm = true;
-                Ref.PD.charmCost_36 = 0;
-                Ref.PD.grimmChildLevel = 5;
-                Ref.PD.charmCost_40 = 3;
+                PlayerData.instance.SetBoolInternal("gotCharm_" + i, true);
+                PlayerData.instance.hasCharm = true;
+                PlayerData.instance.charmsOwned = 40;
+                PlayerData.instance.royalCharmState = 4;
+                PlayerData.instance.gotShadeCharm = true;
+                PlayerData.instance.charmCost_36 = 0;
+                PlayerData.instance.grimmChildLevel = 5;
+                PlayerData.instance.charmCost_40 = 3;
             }
         };*/
     }
 
     private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)
     {
-        self.brokenGlassHP = localSettings.BrokenCharms[(int)Charm.UnbreakableHeart].GetSprite();
-        self.brokenGlassGeo = localSettings.BrokenCharms[(int)Charm.UnbreakableGreed].GetSprite();;
-        self.brokenGlassAttack = localSettings.BrokenCharms[(int)Charm.UnbreakableStrength].GetSprite();
-        self.whiteCharm = localSettings.BrokenCharms[(int)Charm.VoidHeart].GetSprite();
-        self.blackCharm = localSettings.BrokenCharms[(int)Charm.VoidHeart].GetSprite();
+        self.brokenGlassHP = localSettings.BrokenCharms[23].GetSprite();
+        self.brokenGlassGeo = localSettings.BrokenCharms[24].GetSprite();;
+        self.brokenGlassAttack = localSettings.BrokenCharms[25].GetSprite();
+        self.whiteCharm = localSettings.BrokenCharms[36].GetSprite();
+        self.blackCharm = localSettings.BrokenCharms[36].GetSprite();
         orig(self);
         SetAllCharmIcons();
     }
@@ -107,7 +107,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     private void UnEquipBrokenCharms(On.HeroController.orig_Start orig, HeroController self)
     {
         orig(self);
-        Ref.PD.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
+        PlayerData.instance.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
         {
             if (localSettings.BrokenCharms.ContainsKey(c) && localSettings.BrokenCharms[c].isBroken)
             {
@@ -173,21 +173,25 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     {
         if (globalSettings.BreakOnAllDamage && damageamount > 0 || globalSettings.BreakOnDoubleDamage && damageamount > 2)
         {
+            
             BreakEquippedCharms(s => s is CharmState.Delicate);
+            
         }
         return damageamount;
     }
     
     private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
     {
-        BreakEquippedCharms((s) => s is CharmState.Delicate);
+        
+        BreakEquippedCharms(s => s is CharmState.Delicate);
+        
         yield return orig(self);
     }
 
     private void BreakEquippedCharms(Func<CharmState, bool> hasCorrectCharmState)
     {
         bool anyBroken = false;
-        Ref.PD.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
+        PlayerData.instance.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
         {
             if (localSettings.BrokenCharms.ContainsKey(c) && hasCorrectCharmState(localSettings.BrokenCharms[c].charmState))
             {
@@ -206,11 +210,11 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     private void BreakCharm(int charmNum)
     {
         localSettings.BrokenCharms[charmNum].isBroken = true;
-        CharmUtil.UnequipCharm(charmNum);
+        Extensions.UnequipCharm(charmNum);
         PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
         PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
         
-        if(charmNum == (int)Charm.Grimmchild)
+        if(charmNum == 40)
         {
             var gc = GameObject.FindWithTag("Grimmchild");
             if (gc != null)
@@ -278,15 +282,15 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     {
         if (CharmIconList.Instance != null)
         {
-            CharmIconList.Instance.grimmchildLevel1 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-            CharmIconList.Instance.grimmchildLevel2 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-            CharmIconList.Instance.grimmchildLevel3 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-            CharmIconList.Instance.grimmchildLevel4 = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
-            CharmIconList.Instance.nymmCharm = localSettings.BrokenCharms[(int)Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel1 = localSettings.BrokenCharms[40].GetSprite();
+            CharmIconList.Instance.grimmchildLevel2 = localSettings.BrokenCharms[40].GetSprite();
+            CharmIconList.Instance.grimmchildLevel3 = localSettings.BrokenCharms[40].GetSprite();
+            CharmIconList.Instance.grimmchildLevel4 = localSettings.BrokenCharms[40].GetSprite();
+            CharmIconList.Instance.nymmCharm = localSettings.BrokenCharms[40].GetSprite();
 
-            CharmIconList.Instance.unbreakableGreed = localSettings.BrokenCharms[(int)Charm.UnbreakableGreed].GetSprite();
-            CharmIconList.Instance.unbreakableHeart = localSettings.BrokenCharms[(int)Charm.UnbreakableHeart].GetSprite();
-            CharmIconList.Instance.unbreakableStrength = localSettings.BrokenCharms[(int)Charm.UnbreakableStrength].GetSprite();
+            CharmIconList.Instance.unbreakableGreed = localSettings.BrokenCharms[24].GetSprite();
+            CharmIconList.Instance.unbreakableHeart = localSettings.BrokenCharms[23].GetSprite();
+            CharmIconList.Instance.unbreakableStrength = localSettings.BrokenCharms[25].GetSprite();
         }
         
         foreach (var (charmNum, charmData) in localSettings.BrokenCharms)

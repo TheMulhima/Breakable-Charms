@@ -3,3 +3,8 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+*.zip
+BreakableCharms/Settings/.idea/.idea.Settings.dir/.idea/encodings.xml
+BreakableCharms/Settings/.idea/.idea.Settings.dir/.idea/indexLayout.xml
+BreakableCharms/Settings/.idea/.idea.Settings.dir/.idea/projectSettingsUpdater.xml
+BreakableCharms/Settings/.idea/.idea.Settings.dir/.idea/workspace.xml

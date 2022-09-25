@@ -13,7 +13,6 @@ global using ItemChanger;
 global using ItemChanger.Tags;
 global using ItemChanger.Locations;
 global using ItemChanger.Placements;
-global using Osmi.Game;
 global using Satchel.Futils;
 global using ReflectionHelper = Modding.ReflectionHelper;
 global using USceneManager = UnityEngine.SceneManagement.SceneManager;

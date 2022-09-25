@@ -4,7 +4,7 @@ public class GrimmChildData : CharmData
 {
     public GrimmChildData():base(40) {}
     public override bool HasSpecialSprite => true;
-    public int GrimmChildLevel => Ref.PD.GetInt(nameof(PlayerData.grimmChildLevel));
+    public int GrimmChildLevel => PlayerData.instance.GetInt(nameof(PlayerData.grimmChildLevel));
     public static Dictionary<int, Sprite> BrokenSprites = new Dictionary<int, Sprite>()
     {
         {1, Extensions.LoadSpriteFromResources("Images.Broken.Special.Charm_40_1")},

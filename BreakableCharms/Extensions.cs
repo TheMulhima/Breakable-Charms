@@ -41,5 +41,32 @@ public static class Extensions
         texture2D.Apply();
         return Sprite.Create(texture2D, new Rect(0.0f, 0.0f, (float) texture2D.width, (float) texture2D.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
     }
+    
+    public static bool UnequipCharm(int charm) {
+        if (!EquippedCharm(charm)) {
+            return false;
+        }
+
+        PlayerData.instance.charmSlotsFilled -= GetCharmCost(charm);
+
+        if (PlayerData.instance.overcharmed && PlayerData.instance.charmSlotsFilled <= PlayerData.instance.charmSlots) {
+            PlayerData.instance.overcharmed = false;
+        }
+
+        PlayerData.instance.SetBool($"equippedCharm_{charm}", false);
+        PlayerData.instance.UnequipCharm(charm);
+
+        HeroController.instance.CharmUpdate();
+        PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
+        PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
+
+        return true;
+    }
+    
+    public static bool EquippedCharm(int charm) =>
+        PlayerData.instance.GetBool($"equippedCharm_{charm}");
+    
+    public static int GetCharmCost(int charm) =>
+        PlayerData.instance.GetInt($"charmCost_{charm}");
 
 }
