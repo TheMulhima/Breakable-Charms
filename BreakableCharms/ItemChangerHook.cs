@@ -33,13 +33,13 @@ public static class ItemChangerHook
         };
         
         List<AbstractItem> charmList = new List<AbstractItem>();
-
+        
         foreach (var (charmNum, _) in Dictionaries.CharmNameFromID)
         {
             charmList.Add(new FragileCharmItem
             {
                 charmNum = charmNum,
-                name = Dictionaries.CharmNameFromID[charmNum].Replace("_", " "),
+                name = Dictionaries.CharmNameFromID[charmNum],
                 UIDef = new CharmUIDef
                 {
                     charmNum = charmNum,
@@ -52,31 +52,20 @@ public static class ItemChangerHook
                         Cost = new MultiCost(new GeoCost(600), 
                         new NotBrokenCost { charmNum = charmNum, })
                     },
-                    new HasCharmRequirement
-                    {
-                        charmNum = charmNum
-                    },
-                    new HasCharmStateRequirement
+                    new CharmInCorrectStateReq
                     {
                         charmNum = charmNum,
                         requiredState = CharmState.Delicate,
                     },
                     
-                    new ShopPersistentTag
-                    {
-                        persistence = Persistence.Single
-                    },
+                    new SinglePurchaceTag()
                     
                 }
             });
-        }
-
-        foreach (var (charmNum, _) in Dictionaries.CharmNameFromID)
-        {
             charmList.Add(new UnbreakableCharmItem
             {
                 charmNum = charmNum,
-                name = Dictionaries.CharmNameFromID[charmNum].Replace("_", " "),
+                name = Dictionaries.CharmNameFromID[charmNum],
                 UIDef = new CharmUIDef
                 {
                     charmNum = charmNum,
@@ -89,19 +78,12 @@ public static class ItemChangerHook
                         Cost = new MultiCost(new GeoCost(1500),
                             new NotBrokenCost { charmNum = charmNum, })
                     },
-                    new HasCharmRequirement
-                    {
-                        charmNum = charmNum
-                    },
-                    new HasCharmStateRequirement
+                    new CharmInCorrectStateReq
                     {
                         charmNum = charmNum,
                         requiredState = CharmState.Fragile,
                     },
-                    new ShopPersistentTag
-                    {
-                        persistence = Persistence.Single
-                    },
+                    new SinglePurchaceTag()
 
                 }
             });
