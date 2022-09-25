@@ -58,7 +58,7 @@ public static class ItemChangerHook
                         requiredState = CharmState.Delicate,
                     },
                     
-                    new SinglePurchaceTag()
+                    new SinglePurchaseTag()
                     
                 }
             });
@@ -83,7 +83,7 @@ public static class ItemChangerHook
                         charmNum = charmNum,
                         requiredState = CharmState.Fragile,
                     },
-                    new SinglePurchaceTag()
+                    new SinglePurchaseTag()
 
                 }
             });

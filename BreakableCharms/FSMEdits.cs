@@ -119,7 +119,7 @@ public static class FSMEdits
                 
             var geoIcon = costgo.Find($"Cost 1");
             geoIcon.localPosition = geoIcon.localPosition.Y(costFSM.GetVariable<FsmFloat>("Present Y").Value + 0.05f);
-            geoIcon.GetComponent<SpriteRenderer>().sprite = BreakableCharms.geo;
+            geoIcon.GetComponent<SpriteRenderer>().sprite = Extensions.LoadSpriteFromResources("Images.Misc.Geo");
                 
             for (int i = 1; i <= 6; i++)
             {

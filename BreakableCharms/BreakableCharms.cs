@@ -6,7 +6,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
 {
     internal static BreakableCharms Instance;
 
-    public static Sprite brokenCharm, geo, charmCostIndicator;
+    public static Sprite charmCostIndicator;
     //some special cases we have
     public static Sprite grimmChild1, grimmChild2, grimmChild3, grimmChild4;
     public static Sprite kingsFragment, queensFragment, kingSoul;
@@ -14,10 +14,10 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public static AudioClip charmBuySuccess, charmBuyFail;
     public static AudioSource AudioPlayer;
 
-    public static LocalSettings localSettings { get; private set; } = new LocalSettings();
+    public static LocalSettings localSettings { get; private set; } = new ();
     public void OnLoadLocal(LocalSettings s) => localSettings = s;
     public LocalSettings OnSaveLocal() => localSettings;
-    public static GlobalSettings globalSettings { get; private set; } = new GlobalSettings();
+    public static GlobalSettings globalSettings { get; private set; } = new ();
     public void OnLoadGlobal(GlobalSettings s) => globalSettings = s;
     public GlobalSettings OnSaveGlobal() => globalSettings;
 
@@ -30,9 +30,6 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         var go = new GameObject();
         UnityEngine.Object.DontDestroyOnLoad(go);
         AudioPlayer = go.AddComponent<AudioSource>();
-
-        brokenCharm = Extensions.LoadSpriteFromResources("Images.Misc.BrokenCharm");
-        geo = Extensions.LoadSpriteFromResources("Images.Misc.Geo", 100f);
 
         On.UIManager.StartNewGame += ICHook;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
