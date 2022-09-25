@@ -1,6 +1,6 @@
 ﻿namespace BreakableCharms;
 
-public class SinglePurchaceTag:Tag, IPersistenceTag
+public class SinglePurchaseTag:Tag, IPersistenceTag
 {
     public Persistence Persistence => Persistence.Single;
 }
