@@ -24,11 +24,10 @@ public static class ModMenu
                 () => BreakableCharms.globalSettings.BreakOnDoubleDamage, 
                 Id:"DoubleDamage"),
         });
-
         return MenuRef.GetMenuScreen(modlistmenu);
     }
     
-    public static HorizontalOption BoolOption(string name, 
+    private static HorizontalOption BoolOption(string name, 
         string description, 
         Action<bool> applySetting, 
         Func<bool> loadSetting, 

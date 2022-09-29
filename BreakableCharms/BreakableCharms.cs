@@ -49,23 +49,8 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
  
         LoadSprites();
 
-        //todo: check if voidheart can be unequipped on death
+        //todo: check whats wrong with voidheart naming after buying
         //todo: rando integration
-
-        /*ModHooks.NewGameHook += () =>
-        {
-            for (int i = 1; i <= 40; i++)
-            {
-                PlayerData.instance.SetBoolInternal("gotCharm_" + i, true);
-                PlayerData.instance.hasCharm = true;
-                PlayerData.instance.charmsOwned = 40;
-                PlayerData.instance.royalCharmState = 4;
-                PlayerData.instance.gotShadeCharm = true;
-                PlayerData.instance.charmCost_36 = 0;
-                PlayerData.instance.grimmChildLevel = 5;
-                PlayerData.instance.charmCost_40 = 3;
-            }
-        };*/
     }
 
     private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)
