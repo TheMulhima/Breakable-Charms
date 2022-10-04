@@ -42,6 +42,7 @@ public static class FSMEdits
                     {
                         RepairCharm(costgo, costFSM, charmNum);
                         PlayerData.instance.IntAdd(nameof(PlayerData.geo), -200);
+                        HeroController.instance.geoCounter.geoTextMesh.text = PlayerData.instance.GetInt(nameof(PlayerData.geo)).ToString();
                         BreakableCharms.AudioPlayer.pitch = 1f;
                         BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuySuccess);
                     }
