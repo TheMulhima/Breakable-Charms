@@ -37,7 +37,8 @@ public class CharmData
         {
             CharmState.Delicate => Dictionaries.DelicateCharmSpriteFromID[charmNum],
             CharmState.Fragile => Dictionaries.FragileCharmSpriteFromID[charmNum],
-            CharmState.Unbreakable => Dictionaries.UnbreakableCharmSpriteFromID[charmNum]
+            CharmState.Unbreakable => Dictionaries.UnbreakableCharmSpriteFromID[charmNum],
+            _ => throw new InvalidOperationException()
         };
     }
 
