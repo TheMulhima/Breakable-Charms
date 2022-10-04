@@ -1,4 +1,8 @@
-﻿using TMPro;
+﻿using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using Osmi.Game;
+using TMPro;
+using UnityEngine.PlayerLoop;
 
 namespace BreakableCharms;
 
@@ -38,7 +42,6 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         On.CharmIconList.Start += FixCharmSprites;
         ModHooks.SceneChanged += FixCharmSpritesOnSceneChange;
         ModHooks.AfterPlayerDeadHook += BreakCharmsOnPlayerDead;
-        ModHooks.AfterTakeDamageHook += BreakCharmsOnTakeDamage;
         On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
         On.PlayerData.CountCharms += SetIcons_CountCharms;
         ModHooks.SetPlayerIntHook += SetIcons_SetIntHook;
@@ -46,6 +49,29 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         ModHooks.GetPlayerVariableHook += SetIcons_GetVariableHook;
         ModHooks.SetPlayerBoolHook += DontSetBrokenBools;
         On.CharmDisplay.Start += FixSprites;
+        IL.HeroController.TakeDamage += (il) =>
+        {
+            var cursor = new ILCursor(il);
+            while (cursor.TryGotoNext(MoveType.After,
+                       i =>i.MatchCall<ModHooks>("AfterTakeDamage")))
+            {
+                cursor.GotoNext();
+                cursor.Emit(OpCodes.Ldarg_3);
+                cursor.EmitDelegate<Action<int>>((damageamount) =>
+                {
+                    if (PlayerData.instance.GetBool(nameof(PlayerData.overcharmed)))
+                    {
+                        damageamount *= 2;
+                    }
+
+                    if (globalSettings.BreakOnAllDamage && damageamount >= 1 ||
+                        globalSettings.BreakOnDoubleDamage && damageamount >= 2)
+                    {
+                        BreakEquippedCharms(s => s is CharmState.Delicate);
+                    }
+                });
+            }
+        };
  
         LoadSprites();
 
@@ -55,11 +81,11 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
 
     private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)
     {
-        self.brokenGlassHP = localSettings.BrokenCharms[23].GetSprite();
-        self.brokenGlassGeo = localSettings.BrokenCharms[24].GetSprite();;
-        self.brokenGlassAttack = localSettings.BrokenCharms[25].GetSprite();
-        self.whiteCharm = localSettings.BrokenCharms[36].GetSprite();
-        self.blackCharm = localSettings.BrokenCharms[36].GetSprite();
+        self.brokenGlassHP = localSettings.BrokenCharms[(int)Osmi.Game.Charm.LifebloodHeart].GetSprite();
+        self.brokenGlassGeo = localSettings.BrokenCharms[(int)Osmi.Game.Charm.UnbreakableGreed].GetSprite();;
+        self.brokenGlassAttack = localSettings.BrokenCharms[(int)Osmi.Game.Charm.UnbreakableStrength].GetSprite();
+        self.whiteCharm = localSettings.BrokenCharms[(int)Osmi.Game.Charm.VoidHeart].GetSprite();
+        self.blackCharm = localSettings.BrokenCharms[(int)Osmi.Game.Charm.VoidHeart].GetSprite();
         orig(self);
         SetAllCharmIcons();
     }
@@ -96,6 +122,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
                 BreakCharm(c);
             }
         });
+        Osmi.Game.CharmUtil.UpdateCharm();
         SetAllCharmIcons();
     }
 
@@ -150,18 +177,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate);
         SetAllCharmIcons();
     }
-    
-    private int BreakCharmsOnTakeDamage(int hazardtype, int damageamount)
-    {
-        if (globalSettings.BreakOnAllDamage && damageamount > 0 || globalSettings.BreakOnDoubleDamage && damageamount > 2)
-        {
-            
-            BreakEquippedCharms(s => s is CharmState.Delicate);
-            
-        }
-        return damageamount;
-    }
-    
+
     private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
     {
         
@@ -179,12 +195,36 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
             {
                 BreakCharm(c);
                 anyBroken = true;
+                Extensions.EditedHCUpdateCharm(c);
             }
         });
 
         if (anyBroken)
         {
+            PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
+            PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
+            CharmUtil.UpdateCharmUI();
             new BreakCharmUIDef().SendMessage(MessageType.Corner, null);
+
+            GameManager.instance.StartCoroutine(Corr());
+
+            IEnumerator Corr()
+            {
+                yield return null;
+                yield return null;
+                var healthgo = GameCameras.instance.hudCanvas.transform.Find("Health"); 
+                for(int i = 0; i < healthgo.childCount; i++)
+                {
+                    if (healthgo.GetChild(i).name.StartsWith("Health"))
+                    {
+                        if (int.Parse(healthgo.GetChild(i).name.Split(' ')[1]) <=
+                            PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)))
+                        {
+                            healthgo.GetChild(i).gameObject.LocateMyFSM("health_display").SetState("Pause Frame");
+                        }
+                    }
+                }
+            }
         }
         SetAllCharmIcons();
         
@@ -192,11 +232,9 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     private void BreakCharm(int charmNum)
     {
         localSettings.BrokenCharms[charmNum].isBroken = true;
-        Extensions.UnequipCharm(charmNum);
-        PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
-        PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
+        Osmi.Game.CharmUtil.UnequipCharm(charmNum);
         
-        if(charmNum == 40)
+        if(charmNum == (int)Osmi.Game.Charm.Grimmchild)
         {
             var gc = GameObject.FindWithTag("Grimmchild");
             if (gc != null)
@@ -264,15 +302,15 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     {
         if (CharmIconList.Instance != null)
         {
-            CharmIconList.Instance.grimmchildLevel1 = localSettings.BrokenCharms[40].GetSprite();
-            CharmIconList.Instance.grimmchildLevel2 = localSettings.BrokenCharms[40].GetSprite();
-            CharmIconList.Instance.grimmchildLevel3 = localSettings.BrokenCharms[40].GetSprite();
-            CharmIconList.Instance.grimmchildLevel4 = localSettings.BrokenCharms[40].GetSprite();
-            CharmIconList.Instance.nymmCharm = localSettings.BrokenCharms[40].GetSprite();
+            CharmIconList.Instance.grimmchildLevel1 = localSettings.BrokenCharms[(int)Osmi.Game.Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel2 = localSettings.BrokenCharms[(int)Osmi.Game.Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel3 = localSettings.BrokenCharms[(int)Osmi.Game.Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.grimmchildLevel4 = localSettings.BrokenCharms[(int)Osmi.Game.Charm.Grimmchild].GetSprite();
+            CharmIconList.Instance.nymmCharm = localSettings.BrokenCharms[(int)Osmi.Game.Charm.Grimmchild].GetSprite();
 
-            CharmIconList.Instance.unbreakableGreed = localSettings.BrokenCharms[24].GetSprite();
-            CharmIconList.Instance.unbreakableHeart = localSettings.BrokenCharms[23].GetSprite();
-            CharmIconList.Instance.unbreakableStrength = localSettings.BrokenCharms[25].GetSprite();
+            CharmIconList.Instance.unbreakableGreed = localSettings.BrokenCharms[(int)Osmi.Game.Charm.UnbreakableGreed].GetSprite();
+            CharmIconList.Instance.unbreakableHeart = localSettings.BrokenCharms[(int)Osmi.Game.Charm.UnbreakableHeart].GetSprite();
+            CharmIconList.Instance.unbreakableStrength = localSettings.BrokenCharms[(int)Osmi.Game.Charm.UnbreakableStrength].GetSprite();
         }
         
         foreach (var (charmNum, charmData) in localSettings.BrokenCharms)

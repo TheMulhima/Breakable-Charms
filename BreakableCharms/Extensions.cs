@@ -41,32 +41,56 @@ public static class Extensions
         texture2D.Apply();
         return Sprite.Create(texture2D, new Rect(0.0f, 0.0f, (float) texture2D.width, (float) texture2D.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
     }
-    
-    public static bool UnequipCharm(int charm) {
-        if (!EquippedCharm(charm)) {
-            return false;
+
+    public static void EditedHCUpdateCharm(int charmNumBroken)
+    {
+        if (charmNumBroken == (int)Osmi.Game.Charm.NailmastersGlory)
+        {
+            ReflectionHelper.SetField(HeroController.instance, "nailChargeTime",
+            !PlayerData.instance.GetBool(nameof(PlayerData.equippedCharm_26))
+                ? HeroController.instance.NAIL_CHARGE_TIME_DEFAULT
+                : HeroController.instance.NAIL_CHARGE_TIME_CHARM);
+        }
+        
+        if (charmNumBroken == (int) Osmi.Game.Charm.UnbreakableHeart)
+        {
+            PlayerData.instance.SetInt(nameof(PlayerData.maxHealth), PlayerData.instance.GetInt(nameof(PlayerData.maxHealthBase)));
+            
+            if (PlayerData.instance.GetInt(nameof(PlayerData.health)) > PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)))
+            {
+                PlayerData.instance.SetInt(nameof(PlayerData.health), PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)));    
+            }
         }
 
-        PlayerData.instance.charmSlotsFilled -= GetCharmCost(charm);
-
-        if (PlayerData.instance.overcharmed && PlayerData.instance.charmSlotsFilled <= PlayerData.instance.charmSlots) {
-            PlayerData.instance.overcharmed = false;
+        if (charmNumBroken == (int)Osmi.Game.Charm.Grimmchild)
+        {
+            HeroController.instance.carefreeShieldEquipped = PlayerData.instance.GetBool(nameof(PlayerData.equippedCharm_40)) && 
+                                                             PlayerData.instance.GetInt(nameof(PlayerData.grimmChildLevel)) == 5;
         }
 
-        PlayerData.instance.SetBool($"equippedCharm_{charm}", false);
-        PlayerData.instance.UnequipCharm(charm);
+        int oldHealthBlue = PlayerData.instance.GetInt(nameof(PlayerData.healthBlue));
+        
+        if (charmNumBroken == (int)Osmi.Game.Charm.LifebloodHeart)
+        {
+            PlayerData.instance.SetInt(nameof(PlayerData.healthBlue), (oldHealthBlue - 2).SetPositive());
+        }
+        if (charmNumBroken == (int)Osmi.Game.Charm.LifebloodCore)
+        {
+            PlayerData.instance.SetInt(nameof(PlayerData.healthBlue), (oldHealthBlue - 4).SetPositive());
+        }
 
-        HeroController.instance.CharmUpdate();
-        PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
-        PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
+        if (charmNumBroken == (int)Osmi.Game.Charm.JonisBlessing)
+        {
+            PlayerData.instance.SetInt(nameof(PlayerData.joniHealthBlue), 0);
+            PlayerData.instance.SetInt(nameof(PlayerData.maxHealth), PlayerData.instance.GetInt(nameof(PlayerData.maxHealthBase)));
+            PlayerData.instance.SetInt(nameof(PlayerData.health), PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)));  
+            PlayerData.instance.SetBool("joniBeam", false);
+        }
+    }
 
-        return true;
+    public static int SetPositive(this int value)
+    {
+        return value >= 0 ? value : 0;
     }
     
-    public static bool EquippedCharm(int charm) =>
-        PlayerData.instance.GetBool($"equippedCharm_{charm}");
-    
-    public static int GetCharmCost(int charm) =>
-        PlayerData.instance.GetInt($"charmCost_{charm}");
-
 }
