@@ -53,7 +53,8 @@ public class GrimmChildData : CharmData
                 2 => BreakableCharms.grimmChild2,
                 3 => BreakableCharms.grimmChild3,
                 4 => BreakableCharms.grimmChild4,
-                5 => Dictionaries.UnbreakableCharmSpriteFromID[charmNum]
+                5 => Dictionaries.UnbreakableCharmSpriteFromID[charmNum],
+                _ => throw new InvalidOperationException()
             };
         }
         return null;

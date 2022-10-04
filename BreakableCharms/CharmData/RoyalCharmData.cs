@@ -61,10 +61,58 @@ public class RoyalCharmData : CharmData
                 1 => BreakableCharms.kingsFragment,
                 2 => BreakableCharms.queensFragment,
                 3 => BreakableCharms.kingSoul,
-                4 => Dictionaries.UnbreakableCharmSpriteFromID[charmNum]
+                4 => Dictionaries.UnbreakableCharmSpriteFromID[charmNum],
+                _ => throw new InvalidOperationException()
             };
         }
         return null;
+    }
+    private string AddSuffix(string key)
+    {
+        if (key.EndsWith("_A") || key.EndsWith("_B") || key.EndsWith("_C")) return key;
+        return key + RoyalCharmState switch
+        {
+            1 => "_A",
+            2 => "_A",
+            3 => "_B",
+            4 => "_C",
+            _ => "_A"
+        };
+    }
+    public override string GetInventoryName(string key, string sheetitle, string orig)
+    {
+        orig = Language.Language.GetInternal(AddSuffix(key), sheetitle);
+        if (isBroken) return "Broken " + orig;
+                
+        switch (charmState)
+        {
+            case CharmState.Delicate:
+                return "Delicate " + orig;
+            case CharmState.Fragile:
+                return "Fragile " + orig;
+            case CharmState.Unbreakable:
+                return "Unbreakable " + orig;
+        }
+
+        return "";
+    }
+    
+    public override string GetInventoryDesc(string key, string sheetitle, string orig)
+    {
+        orig = Language.Language.GetInternal(AddSuffix(key), sheetitle);
+        if (isBroken) return "Click enter to repair.\nCost: 200 geo";
+                
+        switch (charmState)
+        {
+            case CharmState.Delicate:
+                return "A Delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+            case CharmState.Fragile:
+                return "A Fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+            case CharmState.Unbreakable:
+                return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+        }
+
+        return "";
     }
     
 }
