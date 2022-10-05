@@ -9,7 +9,7 @@ public class UnbreakableCharmItem : AbstractItem
     public override void GiveImmediate(GiveInfo info)
     {
         BreakableCharms.localSettings.BrokenCharms[charmNum].charmState = CharmState.Unbreakable;
-        BreakableCharms.SetAllCharmIcons();
+        CharmUtils.SetAllCharmIcons();
     }
 
     public override bool Redundant() => false;

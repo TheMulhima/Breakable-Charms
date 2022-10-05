@@ -12,7 +12,7 @@ public class FragileCharmItem : AbstractItem
         {
             BreakableCharms.localSettings.BrokenCharms[charmNum].charmState = CharmState.Fragile;
         }
-        BreakableCharms.SetAllCharmIcons();
+        CharmUtils.SetAllCharmIcons();
     }
 
     public override bool Redundant() => false;

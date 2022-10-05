@@ -7,27 +7,27 @@ public class GrimmChildData : CharmData
     public int GrimmChildLevel => PlayerData.instance.GetInt(nameof(PlayerData.grimmChildLevel));
     public static Dictionary<int, Sprite> BrokenSprites = new Dictionary<int, Sprite>()
     {
-        {1, Extensions.LoadSpriteFromResources("Images.Broken.Special.Charm_40_1")},
-        {2, Extensions.LoadSpriteFromResources("Images.Broken.Special.Charm_40_2")},
-        {3, Extensions.LoadSpriteFromResources("Images.Broken.Special.Charm_40_3")},
-        {4, Extensions.LoadSpriteFromResources("Images.Broken.Special.Charm_40_4")},
-        {5, Extensions.LoadSpriteFromResources("Images.Broken.Special.Charm_40_5")},
+        {1, SpriteUtils.LoadSpriteFromResources("Images.Broken.Special.Charm_40_1")},
+        {2, SpriteUtils.LoadSpriteFromResources("Images.Broken.Special.Charm_40_2")},
+        {3, SpriteUtils.LoadSpriteFromResources("Images.Broken.Special.Charm_40_3")},
+        {4, SpriteUtils.LoadSpriteFromResources("Images.Broken.Special.Charm_40_4")},
+        {5, SpriteUtils.LoadSpriteFromResources("Images.Broken.Special.Charm_40_5")},
     }; 
     public static Dictionary<int, Sprite> FragileSprites = new Dictionary<int, Sprite>()
     {
-        {1, Extensions.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_1")},
-        {2, Extensions.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_2")},
-        {3, Extensions.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_3")},
-        {4, Extensions.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_4")},
-        {5, Extensions.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_5")},
+        {1, SpriteUtils.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_1")},
+        {2, SpriteUtils.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_2")},
+        {3, SpriteUtils.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_3")},
+        {4, SpriteUtils.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_4")},
+        {5, SpriteUtils.LoadSpriteFromResources("Images.Fragile.Special.Charm_40_5")},
     }; 
     public static Dictionary<int, Sprite> DelicateSprites = new Dictionary<int, Sprite>()
     {
-        {1, Extensions.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_1")},
-        {2, Extensions.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_2")},
-        {3, Extensions.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_3")},
-        {4, Extensions.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_4")},
-        {5, Extensions.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_5")},
+        {1, SpriteUtils.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_1")},
+        {2, SpriteUtils.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_2")},
+        {3, SpriteUtils.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_3")},
+        {4, SpriteUtils.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_4")},
+        {5, SpriteUtils.LoadSpriteFromResources("Images.Delicate.Special.Charm_40_5")},
     }; 
         
     public override Sprite GetSprite()
