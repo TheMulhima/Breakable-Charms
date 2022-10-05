@@ -7,9 +7,9 @@ public class LocalSettings
         foreach (var (charmNum, charmData) in BrokenCharms)
         {
             if (charmData.HasSpecialSprite) continue;
-            Dictionaries.BrokenCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Images.Broken.Charm_{charmNum}");
-            Dictionaries.DelicateCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Images.Delicate.Charm_{charmNum}");
-            Dictionaries.FragileCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Images.Fragile.Charm_{charmNum}");
+            Dictionaries.BrokenCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Broken.Charm_{charmNum}");
+            Dictionaries.DelicateCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Delicate.Charm_{charmNum}");
+            Dictionaries.FragileCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Fragile.Charm_{charmNum}");
         }
     }
     //charmNum, (CharmState, IsBroken)

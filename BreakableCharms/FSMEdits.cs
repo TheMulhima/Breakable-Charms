@@ -1,4 +1,4 @@
-﻿using HutongGames.PlayMaker.Actions;
+﻿using Osmi.Utils;
 using TMPro;
 
 namespace BreakableCharms;
@@ -7,17 +7,19 @@ public static class FSMEdits
 {
     public static GameObject CharmUIGameObject => GameCameras.instance.hudCamera.transform.Find("Inventory").Find("Charms").gameObject;
     private static PlayMakerFSM charmFSM, costFSM;
-    private static Transform costGo;
+    private static GameObject costGo;
+    private static TransformDelegate costGoTranform;
     
     
     public static string CharmNumVariableName = "Current Item Number";
 
     public static void CharmMenuFSMEdits()
     { 
-        costGo = CharmUIGameObject.transform.Find("Details").Find("Cost");
+        costGo = CharmUIGameObject.Find("Details").Find("Cost");
+        costGoTranform = costGo.GetTransformDelegate();
         
         charmFSM = CharmUIGameObject.LocateMyFSM("UI Charms");
-        costFSM = costGo.gameObject.LocateMyFSM("Charm Details Cost");
+        costFSM = costGo.LocateMyFSM("Charm Details Cost");
         
         charmFSM.CreateEmptyState();
         costFSM.CreateEmptyState();
@@ -61,7 +63,7 @@ public static class FSMEdits
             costText.GetComponent<MeshRenderer>().enabled = true;
             
             //set position to right most vanilla position 
-            costGo.localPosition = costGo.localPosition.X(costFSM.GetVariable<FsmFloat>("1 X").Value);
+            costGoTranform.LocalX = costFSM.GetVariable<FsmFloat>("1 X").Value;
             
             foreach (MeshRenderer meshRenderer in costText.GetComponentsInChildren<MeshRenderer>(includeInactive:true))
             {
@@ -73,15 +75,15 @@ public static class FSMEdits
             //get the first notch cost icon    
             var geoIcon = costGo.Find($"Cost 1");
             //make geo icon go show up
-            geoIcon.localPosition = geoIcon.localPosition.Y(costFSM.GetVariable<FsmFloat>("Present Y").Value + 0.05f);
-            geoIcon.GetComponent<SpriteRenderer>().sprite = SpriteUtils.LoadSpriteFromResources("Images.Misc.Geo");
+            geoIcon.GetTransformDelegate().LocalY = costFSM.GetVariable<FsmFloat>("Present Y").Value + 0.05f;
+            geoIcon.GetComponent<SpriteRenderer>().sprite = SpriteUtils.LoadSpriteFromResources("Misc.Geo");
             
             //make all other notch icons disappear
             for (int i = 1; i <= 6; i++)
             {
                 if (i == 1) continue;
                 var costx = costGo.Find($"Cost {i}");
-                costx.localPosition = costx.localPosition.Y(costFSM.GetVariable<FsmFloat>("Absent Y").Value);
+                costx.GetTransformDelegate().LocalY = costFSM.GetVariable<FsmFloat>("Absent Y").Value;
             }
         }
         else
@@ -150,7 +152,7 @@ public static class FSMEdits
         }
         else
         {
-            costGo.localPosition = costGo.localPosition.X(costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value);
+            costGoTranform.LocalX = costFSM.GetVariable<FsmFloat>($"{notchCost} X").Value;
         }
         costGo.Find("Text Cost").GetComponent<TextMeshPro>().text = "Cost";
         costGo.Find($"Cost 1").GetComponent<SpriteRenderer>().sprite = BreakableCharms.charmCostIndicator;
@@ -159,8 +161,7 @@ public static class FSMEdits
         for (int i = 1; i <= 6; i++)
         {
             var costx = costGo.Find($"Cost {i}");
-            costx.localPosition =
-                costx.localPosition.Y(costFSM.GetVariable<FsmFloat>(i <= notchCost ? "Present Y" : "Absent Y").Value);
+            costx.GetTransformDelegate().LocalY = costFSM.GetVariable<FsmFloat>(i <= notchCost ? "Present Y" : "Absent Y").Value;
         }
     }
 }

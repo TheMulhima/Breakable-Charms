@@ -21,12 +21,6 @@ public static class Extensions
     
     #endregion
 
-    #region VectorExtensions
-    public static Vector3 X (this Vector3 vector3, float x) => new (x, vector3.y, vector3.z);
-    public static Vector3 Y (this Vector3 vector3, float y) => new (vector3.x, y, vector3.z);
-    public static Vector3 Z (this Vector3 vector3, float z) => new (vector3.x, vector3.y, z);
-    #endregion
-
     #region GameObjectExtensions
     
     public static void ChangeSpriteRenderer(this GameObject go, Sprite newSprite) => go.GetComponent<SpriteRenderer>().sprite = newSprite;

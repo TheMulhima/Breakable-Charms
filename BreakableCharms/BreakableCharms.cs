@@ -1,7 +1,7 @@
 ﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Osmi.Game;
-using TMPro;
+using Osmi.Utils;
 
 namespace BreakableCharms;
 
@@ -29,10 +29,8 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
     public override void Initialize()
     {
         Instance ??= this;
-
-        var go = new GameObject();
-        UnityEngine.Object.DontDestroyOnLoad(go);
-        AudioPlayer = go.AddComponent<AudioSource>();
+        
+        AudioPlayer = GameObjectUtil.New(dontDestroyOnLoad:true).AddComponent<AudioSource>();
 
         On.UIManager.StartNewGame += ICHook;
         Osmi.OsmiHooks.AfterEnterSaveHook += FSMEdits.CharmMenuFSMEdits;
