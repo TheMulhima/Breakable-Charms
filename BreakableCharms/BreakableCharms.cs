@@ -35,8 +35,8 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         AudioPlayer = go.AddComponent<AudioSource>();
 
         On.UIManager.StartNewGame += ICHook;
-        On.HeroController.Start += DoFSMEdits;
-        
+        Osmi.OsmiHooks.AfterEnterSaveHook += FSMEdits.CharmMenuFSMEdits;
+
         ModHooks.SetPlayerBoolHook += DontSetBrokenBools;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
         
@@ -50,11 +50,11 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         On.CharmIconList.Start += SetIcons_CharmIconListStart;
         ModHooks.SceneChanged += SetIcons_SceneChanged;
         On.PlayerData.CountCharms += SetIcons_CountCharms;
-        ModHooks.SetPlayerIntHook += SetIcons_SetIntHook;
-        ModHooks.GetPlayerIntHook += SetIcons_GetIntHook;
+        ModHooks.SetPlayerIntHook += SetIcons_IntHook;
+        ModHooks.GetPlayerIntHook += SetIcons_IntHook;
         ModHooks.GetPlayerVariableHook += SetIcons_GetVariableHook;
 
-        On.HeroController.Start += UnEquipBrokenCharms;
+        Osmi.OsmiHooks.AfterEnterSaveHook += UnEquipBrokenCharms;
 
         LoadSprites();
 
@@ -118,15 +118,8 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         orig(self, permadeath, bossrush);
     }
 
-    private void DoFSMEdits(On.HeroController.orig_Start orig, HeroController self)
+    private void UnEquipBrokenCharms()
     {
-        orig(self);
-        FSMEdits.CharmFSMEdits();
-    }
-
-    private void UnEquipBrokenCharms(On.HeroController.orig_Start orig, HeroController self)
-    {
-        orig(self);
         PlayerData.instance.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
         {
             if (localSettings.BrokenCharms.ContainsKey(c) && localSettings.BrokenCharms[c].isBroken)
@@ -205,15 +198,7 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         orig(self);
         CharmUtils.SetAllCharmIcons();
     }
-    private int SetIcons_SetIntHook(string name, int orig)
-    {
-        if (name == nameof(PlayerData.charmsOwned))
-        {
-            CharmUtils.SetAllCharmIcons();
-        }
-        return orig;
-    }
-    private int SetIcons_GetIntHook(string name, int orig)
+    private int SetIcons_IntHook(string name, int orig)
     {
         if (name == nameof(PlayerData.charmsOwned))
         {

@@ -12,7 +12,7 @@ public static class FSMEdits
     
     public static string CharmNumVariableName = "Current Item Number";
 
-    public static void CharmFSMEdits()
+    public static void CharmMenuFSMEdits()
     { 
         costGo = CharmUIGameObject.transform.Find("Details").Find("Cost");
         
