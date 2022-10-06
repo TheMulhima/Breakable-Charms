@@ -22,18 +22,20 @@ public static class ModMenu
                 "Should charms break on taking double damage",
                 b => BreakableCharms.globalSettings.BreakOnDoubleDamage = b,
                 () => BreakableCharms.globalSettings.BreakOnDoubleDamage, 
-                Id:"DoubleDamage"),
+                Id:"DoubleDamage", isVisible:BreakableCharms.globalSettings.BreakOnAllDamage),
         });
         return MenuRef.GetMenuScreen(modlistmenu);
     }
-    
-    private static HorizontalOption BoolOption(string name, 
-        string description, 
-        Action<bool> applySetting, 
-        Func<bool> loadSetting, 
+
+    private static HorizontalOption BoolOption(string name,
+        string description,
+        Action<bool> applySetting,
+        Func<bool> loadSetting,
         string _true = "True",
         string _false = "False",
-        string Id = "__UseName")
+        string Id = "__UseName",
+        bool isVisible = true)
+
     {
         if (Id == "__UseName")
         {
@@ -42,10 +44,10 @@ public static class ModMenu
 
         return new HorizontalOption(name,
             description,
-            new []{_true, _false},
+            new[] { _true, _false },
             (i) => applySetting(i == 0),
             () => loadSetting() ? 0 : 1,
             Id
-        );
+        ) { isVisible = isVisible };
     }
 }

@@ -118,6 +118,7 @@ public static class CharmUtils
         if (anyBroken)
         {
             PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
+            PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
             PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
             CharmUtil.UpdateCharmUI();
             new BreakCharmUIDef().SendMessage(MessageType.Corner, null);
@@ -138,9 +139,13 @@ public static class CharmUtils
                     //get all the Health n gos
                     if (healthGo.name.StartsWith("Health"))
                     {
-                        //get the health number
+                        //get the health number and check if its not more than max health
                         if (int.Parse(healthGo.name.Split(' ')[1]) <=
-                            PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)))
+                            PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)) &&
+                            
+                            //what happens when mask is broken (if its already broken dont bother
+                            !(healthGo.GetComponent<MeshRenderer>().enabled && !healthGo.Find("Idle").GetComponent<MeshRenderer>().enabled)
+                            )
                         {
                             //set state to the state before it checks whether or not to break mask or not after take damage
                             healthGo.gameObject.LocateMyFSM("health_display").SetState("Pause Frame");
