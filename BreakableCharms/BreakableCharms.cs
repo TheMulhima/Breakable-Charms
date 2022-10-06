@@ -46,11 +46,6 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         //fix sprites
         On.CharmDisplay.Start += FixSprites;
         On.CharmIconList.Start += SetIcons_CharmIconListStart;
-        ModHooks.SceneChanged += SetIcons_SceneChanged;
-        On.PlayerData.CountCharms += SetIcons_CountCharms;
-        ModHooks.SetPlayerIntHook += SetIcons_IntHook;
-        ModHooks.GetPlayerIntHook += SetIcons_IntHook;
-        ModHooks.GetPlayerVariableHook += SetIcons_GetVariableHook;
 
         Osmi.OsmiHooks.AfterEnterSaveHook += UnEquipBrokenCharms;
 
@@ -58,7 +53,6 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
 
         //todo: check jonis working properly
         //todo: check health in bindings
-        //todo: check if all the set icons are actually required
         //todo: rando integration
     }
 
@@ -191,40 +185,12 @@ public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings
         charmBuySuccess = allAudioClips.First(a => a.name == "shiny_item_pickup");
         charmBuyFail = allAudioClips.First(a => a.name == "sword_hit_reject");
     }
-    private void SetIcons_CountCharms(On.PlayerData.orig_CountCharms orig, PlayerData self)
-    {
-        orig(self);
-        CharmUtils.SetAllCharmIcons();
-    }
-    private int SetIcons_IntHook(string name, int orig)
-    {
-        if (name == nameof(PlayerData.charmsOwned))
-        {
-            CharmUtils.SetAllCharmIcons();
-        }
-        return orig;
-    }
-    private object SetIcons_GetVariableHook(Type type, string name, object orig)
-    {
-        if (type == typeof(List<int>) && name == nameof(PlayerData.equippedCharms))
-        {
-            CharmUtils.SetAllCharmIcons();
-        }
-        return orig;
-    }
-    
-    
     private void SetIcons_CharmIconListStart(On.CharmIconList.orig_Start orig, CharmIconList self)
     {
         orig(self);
         CharmUtils.SetAllCharmIcons();
     }
 
-    private void SetIcons_SceneChanged(string obj)
-    {
-        CharmUtils.SetAllCharmIcons();
-    }
-    
     public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates) =>
         ModMenu.CreateModMenu(modListMenu);
 
