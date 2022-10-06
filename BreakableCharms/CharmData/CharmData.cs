@@ -1,6 +1,4 @@
-﻿using Logger = Modding.Logger;
-
-namespace BreakableCharms;
+﻿namespace BreakableCharms.CharmData;
 
 public enum CharmState
 {
@@ -8,7 +6,9 @@ public enum CharmState
     Fragile,
     Unbreakable,
 }
-
+/// <summary>
+/// The main base class that handles charm naming and sprites. special cases inherit from this class
+/// </summary>
 public class CharmData
 {
     public CharmData(int _charmNum)

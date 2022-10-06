@@ -1,6 +1,6 @@
-﻿namespace BreakableCharms;
+﻿namespace BreakableCharms.ItemChanger;
 
-public record NotBrokenCost:Cost
+public sealed record NotBrokenCost:Cost
 {
     public int charmNum;
     public override bool CanPay()

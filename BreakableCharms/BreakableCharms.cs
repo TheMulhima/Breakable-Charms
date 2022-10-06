@@ -5,7 +5,7 @@ using Osmi.Utils;
 
 namespace BreakableCharms;
 
-public class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings>, IGlobalSettings<GlobalSettings>
+public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings>, IGlobalSettings<GlobalSettings>
 {
     internal static BreakableCharms Instance;
 

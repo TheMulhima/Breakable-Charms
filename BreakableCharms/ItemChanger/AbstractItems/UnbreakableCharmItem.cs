@@ -1,8 +1,6 @@
-﻿using ItemChanger;
+﻿namespace BreakableCharms.ItemChanger;
 
-namespace BreakableCharms;
-
-public class UnbreakableCharmItem : AbstractItem
+public sealed class UnbreakableCharmItem : AbstractItem
 {
     public int charmNum;
 

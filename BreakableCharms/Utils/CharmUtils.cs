@@ -121,7 +121,7 @@ public static class CharmUtils
             PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
             PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
             CharmUtil.UpdateCharmUI();
-            new BreakCharmUIDef().SendMessage(MessageType.Corner, null);
+            new BreakCharmMsgUIDef().SendMessage(MessageType.Corner, null);
             
             GlobalCoroutineExecutor.Start(FixHealth());
 

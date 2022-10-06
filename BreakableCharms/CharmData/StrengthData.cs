@@ -1,6 +1,6 @@
-﻿namespace BreakableCharms;
+﻿namespace BreakableCharms.CharmData;
 
-public class StrengthData:CharmData
+public sealed class StrengthData : CharmData
 {
     public StrengthData():base(25) {}
     public override string GetShopName(string key, string sheettitle)

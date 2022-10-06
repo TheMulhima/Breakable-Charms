@@ -1,8 +1,6 @@
-﻿using ItemChanger;
+﻿namespace BreakableCharms.ItemChanger;
 
-namespace BreakableCharms;
-
-public class FragileCharmItem : AbstractItem
+public sealed class FragileCharmItem : AbstractItem
 {
     public int charmNum;
 

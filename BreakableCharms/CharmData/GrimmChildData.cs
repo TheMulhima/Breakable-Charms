@@ -1,6 +1,6 @@
-﻿namespace BreakableCharms;
+﻿namespace BreakableCharms.CharmData;
 
-public class GrimmChildData : CharmData
+public sealed class GrimmChildData : CharmData
 {
     public GrimmChildData():base(40) {}
     public override bool HasSpecialSprite => true;

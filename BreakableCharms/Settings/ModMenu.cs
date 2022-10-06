@@ -1,4 +1,4 @@
-﻿namespace BreakableCharms;
+﻿namespace BreakableCharms.Settings;
 
 public static class ModMenu
 {

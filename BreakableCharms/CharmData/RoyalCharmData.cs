@@ -1,5 +1,5 @@
-﻿namespace BreakableCharms;
-public class RoyalCharmData : CharmData
+﻿namespace BreakableCharms.CharmData;
+public sealed class RoyalCharmData : CharmData
 {
     public RoyalCharmData():base(36) {}
     public override bool HasSpecialSprite => true;

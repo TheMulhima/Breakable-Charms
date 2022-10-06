@@ -1,6 +1,6 @@
-﻿namespace BreakableCharms;
+﻿namespace BreakableCharms.CharmData;
 
-public class GreedData:CharmData
+public sealed class GreedData : CharmData
 {
     public GreedData():base(24) {}
     public override string GetShopName(string key, string sheettitle)

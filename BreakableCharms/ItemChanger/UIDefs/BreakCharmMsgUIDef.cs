@@ -2,7 +2,7 @@
 
 namespace BreakableCharms;
 
-public class BreakCharmUIDef:MsgUIDef
+public sealed class BreakCharmMsgUIDef:MsgUIDef
 {
     public override Sprite GetSprite() => SpriteUtils.LoadSpriteFromResources("Misc.BrokenCharm");
 

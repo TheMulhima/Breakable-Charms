@@ -2,7 +2,7 @@
 
 namespace BreakableCharms;
 
-public class CharmUIDef:MsgUIDef
+public sealed class CharmUIDef:MsgUIDef
 {
     public int charmNum;
     public CharmState StateAfterPurchase;

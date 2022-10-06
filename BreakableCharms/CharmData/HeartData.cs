@@ -1,6 +1,6 @@
-﻿namespace BreakableCharms;
+﻿namespace BreakableCharms.CharmData;
 
-public class HeartData:CharmData
+public sealed class HeartData : CharmData
 {
     public HeartData():base(23) {}
     public override string GetShopName(string key, string sheettitle)
