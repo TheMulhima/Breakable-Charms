@@ -1,43 +1,34 @@
-﻿using ItemChanger.UIDefs;
+﻿/*using ItemChanger.UIDefs;
 
 namespace BreakableCharms;
 
 public sealed class CharmUIDef:MsgUIDef
 {
+    public CharmUIDef()
+    {
+        name = new BoxedString(StateAfterObtain switch
+        {
+            CharmState.Delicate => Language.Language.Get($"{Consts.LangRepairKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n"),
+            CharmState.Fragile => Language.Language.Get($"{Consts.LangFragileKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n"),
+            CharmState.Unbreakable => Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n"),
+        });
+        shopDesc = new BoxedString(StateAfterObtain switch
+        {
+            CharmState.Delicate => Language.Language.Get($"{Consts.LangRepairKey}CHARM_DESC_{charmNum}", "UI"),
+            CharmState.Fragile => Language.Language.Get($"{Consts.LangFragileKey}CHARM_DESC_{charmNum}", "UI"),
+            CharmState.Unbreakable => Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_DESC_{charmNum}", "UI"),
+        });
+        sprite = new BoxedSprite(Finder.GetItem(Dictionaries.CharmNameFromID[charmNum]).UIDef.GetSprite());
+    }
     public int charmNum;
-    public CharmState StateAfterObtain; 
+    public CharmState StateAfterObtain;
 
-    public override string GetPostviewName()
+    public override UIDef Clone()
     {
-        switch (StateAfterObtain)
+        return new CharmUIDef
         {
-            case CharmState.Delicate:
-                return Language.Language.Get($"{Consts.LangRepairKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
-            case CharmState.Fragile:
-                return Language.Language.Get($"{Consts.LangFragileKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
-            case CharmState.Unbreakable:
-                return Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
-        }
-
-        return "";
+            charmNum = charmNum,
+            StateAfterObtain = StateAfterObtain,
+        };
     }
-
-    public override string GetPreviewName() => GetPostviewName();
-
-    public override string GetShopDesc()
-    {
-        switch (StateAfterObtain)
-        {
-            case CharmState.Delicate:
-                return Language.Language.Get($"{Consts.LangRepairKey}CHARM_DESC_{charmNum}", "UI");
-            case CharmState.Fragile:
-                return Language.Language.Get($"{Consts.LangFragileKey}CHARM_DESC_{charmNum}", "UI");
-            case CharmState.Unbreakable:
-                return Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_DESC_{charmNum}", "UI");
-        }
-
-        return "";
-    }
-
-    public override Sprite GetSprite() => BreakableCharms.localSettings.BrokenCharms[charmNum].GetSprite();
-}
+}*/

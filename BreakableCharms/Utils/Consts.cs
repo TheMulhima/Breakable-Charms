@@ -10,6 +10,7 @@ public static class Consts
     public const string ICMod = "ItemChangerMod";
     
     public const string LangRepairKey = "BreakableCharms-Repair-Broken-Charm-";
+    public const string LangDelicateKey = "BreakableCharms-Collect-Delicate-";
     public const string LangFragileKey = "BreakableCharms-Make-Charm-Fragile-";
     public const string LangUnbreakableKey = "BreakableCharms-Make-Charm-Unbreakable-";
 }

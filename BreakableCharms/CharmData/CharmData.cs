@@ -56,6 +56,11 @@ public class CharmData
             };
             return prefix + orig + " (Repair)";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            orig = Extensions.GetOriginalText(key, sheettitle,Consts.LangDelicateKey);
+            return "Delicate " + orig;
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
             orig = Extensions.GetOriginalText(key, sheettitle,Consts.LangFragileKey);
@@ -78,10 +83,15 @@ public class CharmData
             orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangRepairKey);
             return "Repair the charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangDelicateKey);
+            return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
             orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangFragileKey);
-            return "A Fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+            return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
@@ -116,9 +126,9 @@ public class CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A Delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Fragile:
-                return "A Fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Unbreakable:
                 return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }

@@ -15,6 +15,10 @@ public sealed class GreedData : CharmData
             };
             return prefix + "Greed" + " (Repair)";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            return "Delicate Greed";
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
             return "Fragile Greed";
@@ -33,9 +37,13 @@ public sealed class GreedData : CharmData
         {
             return "Repair the charm that causes the bearer to find more Geo when defeating enemies.";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            return "A delicate charm that causes the bearer to find more Geo when defeating enemies.";
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
-            return "A Fragile charm that causes the bearer to find more Geo when defeating enemies.";
+            return "A fragile charm that causes the bearer to find more Geo when defeating enemies.";
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
@@ -52,11 +60,11 @@ public sealed class GreedData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "Delicate " + "Greed";
+                return "Delicate Greed";
             case CharmState.Fragile:
-                return "Fragile " + "Greed";
+                return "Fragile Greed";
             case CharmState.Unbreakable:
-                return "Unbreakable " + "Greed";
+                return "Unbreakable Greed";
         }
 
         return "";

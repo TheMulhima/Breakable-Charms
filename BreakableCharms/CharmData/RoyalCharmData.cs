@@ -105,9 +105,9 @@ public sealed class RoyalCharmData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A Delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Fragile:
-                return "A Fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Unbreakable:
                 return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }

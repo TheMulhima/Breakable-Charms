@@ -1,4 +1,5 @@
-﻿using Modding.Menu;
+﻿using ItemChanger.UIDefs;
+using Modding.Menu;
 using RandomizerCore.Logic;
 using RandomizerCore.LogicItems;
 using RandomizerMod.RC;
@@ -6,7 +7,7 @@ using RandomizerMod.Settings;
 
 namespace BreakableCharms.Randomizer;
 
-public static class RandoHook
+public static class RandoInterop
 {
     public static void HookRando()
     {
@@ -32,12 +33,14 @@ public static class RandoHook
         //if charms randoed, rando this too
         if (BreakableCharms.globalSettings.RandomizeCharmLocations && rb.gs.PoolSettings.Charms)
         {
-            //todo: "fix" vanilla charms
+            rb.RemoveItemByName(ItemNames.Unbreakable_Heart);
+            rb.RemoveItemByName(ItemNames.Unbreakable_Greed);
+            rb.RemoveItemByName(ItemNames.Unbreakable_Strength);
             
             //just add more locations next to original charms to account for the 80ish more items im adding
             foreach (var (_, charmName) in Dictionaries.CharmNameFromID)
             {
-                rb.AddLocationByName(charmName, count: 2);
+                rb.AddLocationByName(CharmLocationLookup(charmName), count: 2);
             }
 
             //add all my items to the ranomized items
@@ -54,10 +57,13 @@ public static class RandoHook
                     {
                         var newcharm = icf.MakeItem(charmName);
                         newcharm.name = charmName + Consts.DelicateSuffix;
-                        newcharm.UIDef = new CharmUIDef
+                        newcharm.UIDef = new MsgUIDef
                         {
-                            charmNum = charmNum,
-                            StateAfterObtain = CharmState.Delicate,
+                            name = new BoxedString(Language.Language
+                                .Get($"{Consts.LangDelicateKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n")),
+                            shopDesc = new BoxedString(
+                                Language.Language.Get($"{Consts.LangDelicateKey}CHARM_DESC_{charmNum}", "UI")),
+                            sprite = new BoxedSprite(Finder.GetItem(charmName).UIDef.GetSprite())
                         };
                             
                         newcharm.tags = new List<Tag>
@@ -78,5 +84,32 @@ public static class RandoHook
         {
             ItemChangerInterop.AddPlacements();
         }
+    }
+
+    public static string CharmLocationLookup(string charmName)
+    {
+        return charmName switch
+        {
+            ItemNames.Gathering_Swarm => LocationNames.Sly,
+            ItemNames.Wayward_Compass => LocationNames.Iselda,
+            ItemNames.Grubsong => LocationNames.Grubfather,
+            ItemNames.Stalwart_Shell => LocationNames.Sly,
+            ItemNames.Quick_Focus => LocationNames.Salubra,
+            ItemNames.Lifeblood_Heart => LocationNames.Salubra,
+            ItemNames.Steady_Body => LocationNames.Salubra,
+            ItemNames.Heavy_Blow => LocationNames.Sly,
+            ItemNames.Longnail => LocationNames.Salubra,
+            ItemNames.Shaman_Stone => LocationNames.Salubra,
+            ItemNames.Dream_Wielder => LocationNames.Seer,
+            ItemNames.Grubberflys_Elegy => LocationNames.Grubfather,
+            ItemNames.Sprintmaster => LocationNames.Sly,
+            ItemNames.Void_Heart => LocationNames.Arcane_Egg_Birthplace,
+            ItemNames.Grimmchild2 => LocationNames.Grimmchild,
+            ItemNames.Fragile_Heart => LocationNames.Leg_Eater,
+            ItemNames.Fragile_Greed => LocationNames.Leg_Eater,
+            ItemNames.Fragile_Strength => LocationNames.Leg_Eater,
+            
+            _ => charmName,
+        };
     }
 }

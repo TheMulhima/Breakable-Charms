@@ -15,6 +15,10 @@ public sealed class StrengthData : CharmData
             };
             return prefix + "Strength" + " (Repair)";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            return "Delicate Strength";
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
             return "Fragile Strength";
@@ -33,9 +37,13 @@ public sealed class StrengthData : CharmData
         {
             return "Repair the charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            return "A delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
-            return "A Fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+            return "A fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
@@ -52,11 +60,11 @@ public sealed class StrengthData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "Delicate " + "Strength";
+                return "Delicate Strength";
             case CharmState.Fragile:
-                return "Fragile " + "Strength";
+                return "Fragile Strength";
             case CharmState.Unbreakable:
-                return "Unbreakable " + "Strength";
+                return "Unbreakable Strength";
         }
 
         return "";
@@ -69,9 +77,9 @@ public sealed class StrengthData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A Delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+                return "A delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
             case CharmState.Fragile:
-                return "A Fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+                return "A fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
             case CharmState.Unbreakable:
                 return "An unbreakable charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
         }

@@ -1,4 +1,5 @@
 ﻿using ItemChanger.Modules;
+using ItemChanger.UIDefs;
 
 namespace BreakableCharms.ItemChanger;
 
@@ -10,14 +11,16 @@ public static class ItemChangerInterop
 
         foreach (var (charmNum, charmName) in Dictionaries.CharmNameFromID)
         {
+            BreakableCharms.Instance.Log($"{charmName} {charmNum}");
             BreakableCharms.ShopCharmList.Add(new FragileCharmItem
             {
                 charmNum = charmNum,
                 name = charmName + Consts.FragileSuffix,
-                UIDef = new CharmUIDef
+                UIDef = new MsgUIDef
                 {
-                    charmNum = charmNum,
-                    StateAfterObtain = CharmState.Fragile
+                    name = new BoxedString(Language.Language.Get($"{Consts.LangFragileKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n")),
+                    shopDesc = new BoxedString(Language.Language.Get($"{Consts.LangFragileKey}CHARM_DESC_{charmNum}", "UI")),
+                    sprite = new BoxedSprite(Finder.GetItem(charmName).UIDef.GetSprite())
                 },
                 tags = CreateShopTagList(charmNum: charmNum, requiredState: CharmState.Delicate, geoCost: 600)
             });
@@ -25,10 +28,11 @@ public static class ItemChangerInterop
             {
                 charmNum = charmNum,
                 name = charmName + Consts.UnbreakableSuffix,
-                UIDef = new CharmUIDef
+                UIDef = new MsgUIDef()
                 {
-                    charmNum = charmNum,
-                    StateAfterObtain = CharmState.Unbreakable
+                    name = new BoxedString(Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n")),
+                    shopDesc = new BoxedString(Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_DESC_{charmNum}", "UI")),
+                    sprite = new BoxedSprite(Finder.GetItem(charmName).UIDef.GetSprite())
                 },
                 tags = CreateShopTagList(charmNum: charmNum, requiredState: CharmState.Fragile, geoCost: 1500)
             });
@@ -37,10 +41,11 @@ public static class ItemChangerInterop
             {
                 charmNum = charmNum,
                 name = charmName + Consts.FragileSuffix,
-                UIDef = new CharmUIDef
+                UIDef = new MsgUIDef
                 {
-                    charmNum = charmNum,
-                    StateAfterObtain = CharmState.Fragile
+                    name = new BoxedString(Language.Language.Get($"{Consts.LangFragileKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n")),
+                    shopDesc = new BoxedString(Language.Language.Get($"{Consts.LangFragileKey}CHARM_DESC_{charmNum}", "UI")),
+                    sprite = new BoxedSprite(Finder.GetItem(charmName).UIDef.GetSprite())
                 },
                 tags = CreateRandoTagList(predecessor: charmName + Consts.DelicateSuffix,
                     successor: charmName + Consts.UnbreakableSuffix)
@@ -50,10 +55,11 @@ public static class ItemChangerInterop
             {
                 charmNum = charmNum,
                 name = charmName + Consts.UnbreakableSuffix,
-                UIDef = new CharmUIDef
+                UIDef = new MsgUIDef
                 {
-                    charmNum = charmNum,
-                    StateAfterObtain = CharmState.Unbreakable
+                    name = new BoxedString(Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n")),
+                    shopDesc = new BoxedString(Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_DESC_{charmNum}", "UI")),
+                    sprite = new BoxedSprite(Finder.GetItem(charmName).UIDef.GetSprite())
                 },
                 tags = CreateRandoTagList(predecessor: charmName + Consts.FragileSuffix,
                     successor: null)

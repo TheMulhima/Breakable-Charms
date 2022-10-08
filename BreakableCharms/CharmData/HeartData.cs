@@ -15,6 +15,10 @@ public sealed class HeartData : CharmData
             };
             return prefix + "Heart" + " (Repair)";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            return "Delicate Heart";
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
             return "Fragile Heart";
@@ -33,9 +37,13 @@ public sealed class HeartData : CharmData
         {
             return "Repair the charm that increases the health of the bearer, allowing them to take more damage.";
         }
+        if (key.Contains(Consts.LangDelicateKey))
+        {
+            return "A delicate charm that increases the health of the bearer, allowing them to take more damage.";
+        }
         if (key.Contains(Consts.LangFragileKey))
         {
-            return "A Fragile charm that increases the health of the bearer, allowing them to take more damage.";
+            return "A fragile charm that increases the health of the bearer, allowing them to take more damage.";
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
@@ -52,11 +60,11 @@ public sealed class HeartData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "Delicate " + "Heart";
+                return "Delicate Heart";
             case CharmState.Fragile:
-                return "Fragile " + "Heart";
+                return "Fragile Heart";
             case CharmState.Unbreakable:
-                return "Unbreakable " + "Heart";
+                return "Unbreakable Heart";
         }
 
         return "";

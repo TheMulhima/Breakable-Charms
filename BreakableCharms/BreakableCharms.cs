@@ -55,7 +55,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
 
         //if they dont have ic ig they'll never have leg eater charms
         if (ModHooks.GetMod(Consts.ICMod) is Mod) ItemChangerInterop.AddItems();
-        if (ModHooks.GetMod(Consts.RandoMod) is Mod) RandoHook.HookRando();
+        if (ModHooks.GetMod(Consts.RandoMod) is Mod) RandoInterop.HookRando();
 
         //todo: check jonis working properly
         //todo: check health in bindings
