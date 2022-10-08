@@ -60,6 +60,7 @@ public sealed class LocalSettings
 
 public sealed class GlobalSettings
 {
+    public bool RandomizeCharmLocations = false;
     public bool BreakOnAllDamage = false;
     public bool BreakOnDoubleDamage = true;
 }

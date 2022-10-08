@@ -5,7 +5,7 @@ public sealed class StrengthData : CharmData
     public StrengthData():base(25) {}
     public override string GetShopName(string key, string sheettitle)
     {
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
             string prefix = charmState switch
             {
@@ -15,11 +15,11 @@ public sealed class StrengthData : CharmData
             };
             return prefix + "Strength" + " (Repair)";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
             return "Fragile Strength";
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
             return "Unbreakable Strength";
         }
@@ -29,15 +29,15 @@ public sealed class StrengthData : CharmData
     
     public override string GetShopDesc(string key, string sheettitle)
     {
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
             return "Repair the charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
             return "A Fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
             return "An unbreakable charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
         }

@@ -45,9 +45,9 @@ public class CharmData
     public virtual string GetShopName(string key, string sheettitle)
     {
         string orig;
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
-            orig = Extensions.GetOriginalText(key, sheettitle,CharmUIDef.Repair_Key);
+            orig = Extensions.GetOriginalText(key, sheettitle,Consts.LangRepairKey);
             string prefix = charmState switch
             {
                 CharmState.Delicate => "Delicate ",
@@ -56,14 +56,14 @@ public class CharmData
             };
             return prefix + orig + " (Repair)";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
-            orig = Extensions.GetOriginalText(key, sheettitle,CharmUIDef.Fragile_Key);
+            orig = Extensions.GetOriginalText(key, sheettitle,Consts.LangFragileKey);
             return "Fragile " + orig;
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
-            orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Unbreakable_Key);
+            orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangUnbreakableKey);
             return "Unbreakable " + orig;
         }
 
@@ -73,19 +73,19 @@ public class CharmData
     public virtual string GetShopDesc(string key, string sheettitle)
     {
         string orig;
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
-            orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Repair_Key);
+            orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangRepairKey);
             return "Repair the charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
-            orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Fragile_Key);
+            orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangFragileKey);
             return "A Fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
-            orig = Extensions.GetOriginalText(key,sheettitle,CharmUIDef.Unbreakable_Key);
+            orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangUnbreakableKey);
             return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
 

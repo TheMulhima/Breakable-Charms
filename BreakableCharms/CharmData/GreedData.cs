@@ -5,7 +5,7 @@ public sealed class GreedData : CharmData
     public GreedData():base(24) {}
     public override string GetShopName(string key, string sheettitle)
     {
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
             string prefix = charmState switch
             {
@@ -15,11 +15,11 @@ public sealed class GreedData : CharmData
             };
             return prefix + "Greed" + " (Repair)";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
             return "Fragile Greed";
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
             return "Unbreakable Greed";
         }
@@ -29,15 +29,15 @@ public sealed class GreedData : CharmData
     
     public override string GetShopDesc(string key, string sheettitle)
     {
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
             return "Repair the charm that causes the bearer to find more Geo when defeating enemies.";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
             return "A Fragile charm that causes the bearer to find more Geo when defeating enemies.";
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
             return "An unbreakable charm that causes the bearer to find more Geo when defeating enemies.";
         }

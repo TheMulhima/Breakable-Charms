@@ -1,4 +1,5 @@
-﻿using Osmi.Utils;
+﻿using Osmi.Game;
+using Osmi.Utils;
 using TMPro;
 
 namespace BreakableCharms;
@@ -116,15 +117,12 @@ public static class FSMEdits
                         RepairCharm(charmNum);
                         PlayerData.instance.IntAdd(nameof(PlayerData.geo), -200);
                         HeroController.instance.geoCounter.geoTextMesh.text = PlayerData.instance.GetInt(nameof(PlayerData.geo)).ToString();
-                        BreakableCharms.AudioPlayer.pitch = 1f;
-                        BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuySuccess);
+                        AudioUtil.PlayOneShot(BreakableCharms.AudioPlayerPrefab, Vector3.zero, BreakableCharms.charmBuySuccess, 1f);
                     }
                     else
                     {
-                        BreakableCharms.AudioPlayer.pitch = 1.25f;
-                        BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuyFail);
-                        BreakableCharms.AudioPlayer.pitch = 0.85f;
-                        BreakableCharms.AudioPlayer.PlayOneShot(BreakableCharms.charmBuyFail);
+                        AudioUtil.PlayOneShot(BreakableCharms.AudioPlayerPrefab, Vector3.zero, BreakableCharms.charmBuyFail, 1.25f);
+                        AudioUtil.PlayOneShot(BreakableCharms.AudioPlayerPrefab, Vector3.zero, BreakableCharms.charmBuyFail, 0.85f);
                     }
                     
                     charmFSM.SetState("Unequippable");

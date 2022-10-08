@@ -118,7 +118,11 @@ public static class CharmUtils
         if (anyBroken)
         {
             PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
-            PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
+            //most likely always gonna run
+            if (!PlayerData.instance.GetBool(nameof(PlayerData.atBench)))
+            {
+                PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
+            }
             PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
             CharmUtil.UpdateCharmUI();
             new BreakCharmMsgUIDef().SendMessage(MessageType.Corner, null);

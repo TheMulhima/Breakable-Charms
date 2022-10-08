@@ -5,7 +5,7 @@ public sealed class HeartData : CharmData
     public HeartData():base(23) {}
     public override string GetShopName(string key, string sheettitle)
     {
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
             string prefix = charmState switch
             {
@@ -15,11 +15,11 @@ public sealed class HeartData : CharmData
             };
             return prefix + "Heart" + " (Repair)";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
             return "Fragile Heart";
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
             return "Unbreakable Heart";
         }
@@ -29,15 +29,15 @@ public sealed class HeartData : CharmData
     
     public override string GetShopDesc(string key, string sheettitle)
     {
-        if (key.Contains(CharmUIDef.Repair_Key))
+        if (key.Contains(Consts.LangRepairKey))
         {
             return "Repair the charm that increases the health of the bearer, allowing them to take more damage.";
         }
-        if (key.Contains(CharmUIDef.Fragile_Key))
+        if (key.Contains(Consts.LangFragileKey))
         {
             return "A Fragile charm that increases the health of the bearer, allowing them to take more damage.";
         }
-        if (key.Contains(CharmUIDef.Unbreakable_Key))
+        if (key.Contains(Consts.LangUnbreakableKey))
         {
             return "An unbreakable charm that increases the health of the bearer, allowing them to take more damage.";
         }

@@ -5,23 +5,18 @@ namespace BreakableCharms;
 public sealed class CharmUIDef:MsgUIDef
 {
     public int charmNum;
-    public CharmState StateAfterPurchase;
-    private UIDef originalDef => Finder.GetItem(Dictionaries.CharmNameFromID[charmNum]).UIDef;
-
-    public const string Repair_Key = "BreakableCharms-Repair-Broken-Charm-";
-    public const string Fragile_Key = "BreakableCharms-Make-Charm-Fragile-";
-    public const string Unbreakable_Key = "BreakableCharms-Make-Charm-Unbreakable-";
+    public CharmState StateAfterObtain; 
 
     public override string GetPostviewName()
     {
-        switch (StateAfterPurchase)
+        switch (StateAfterObtain)
         {
             case CharmState.Delicate:
-                return Language.Language.Get($"{Repair_Key}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
+                return Language.Language.Get($"{Consts.LangRepairKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
             case CharmState.Fragile:
-                return Language.Language.Get($"{Fragile_Key}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
+                return Language.Language.Get($"{Consts.LangFragileKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
             case CharmState.Unbreakable:
-                return Language.Language.Get($"{Unbreakable_Key}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
+                return Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n");
         }
 
         return "";
@@ -31,18 +26,18 @@ public sealed class CharmUIDef:MsgUIDef
 
     public override string GetShopDesc()
     {
-        switch (StateAfterPurchase)
+        switch (StateAfterObtain)
         {
             case CharmState.Delicate:
-                return Language.Language.Get($"{Repair_Key}CHARM_DESC_{charmNum}", "UI");
+                return Language.Language.Get($"{Consts.LangRepairKey}CHARM_DESC_{charmNum}", "UI");
             case CharmState.Fragile:
-                return Language.Language.Get($"{Fragile_Key}CHARM_DESC_{charmNum}", "UI");
+                return Language.Language.Get($"{Consts.LangFragileKey}CHARM_DESC_{charmNum}", "UI");
             case CharmState.Unbreakable:
-                return Language.Language.Get($"{Unbreakable_Key}CHARM_DESC_{charmNum}", "UI");
+                return Language.Language.Get($"{Consts.LangUnbreakableKey}CHARM_DESC_{charmNum}", "UI");
         }
 
         return "";
     }
 
-    public override Sprite GetSprite() => originalDef.GetSprite();
+    public override Sprite GetSprite() => BreakableCharms.localSettings.BrokenCharms[charmNum].GetSprite();
 }
