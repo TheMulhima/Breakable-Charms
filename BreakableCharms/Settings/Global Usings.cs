@@ -17,5 +17,6 @@ global using Satchel.Futils;
 global using BreakableCharms.CharmData;
 global using BreakableCharms.ItemChanger;
 global using BreakableCharms.Settings;
+global using BreakableCharms.Randomizer;
 global using ReflectionHelper = Modding.ReflectionHelper;
 global using USceneManager = UnityEngine.SceneManagement.SceneManager;

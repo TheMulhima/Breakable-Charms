@@ -1,7 +1,7 @@
-﻿using Mono.Cecil.Cil;
+﻿using ItemChanger.Modules;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Osmi.Game;
-using Osmi.Utils;
 
 namespace BreakableCharms;
 
@@ -15,7 +15,11 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     public static Sprite kingsFragment, queensFragment, kingSoul;
 
     public static AudioClip charmBuySuccess, charmBuyFail;
-    public static AudioSource AudioPlayer;
+    public static GameObject AudioPlayerPrefab;
+    
+    //the difference between them is the tags attached
+    public static List<AbstractItem> ShopCharmList = new ();
+    public static List<AbstractItem> RandoCharmList = new ();
 
     public static LocalSettings localSettings { get; private set; } = new ();
     public void OnLoadLocal(LocalSettings s) => localSettings = s;
@@ -29,17 +33,15 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     public override void Initialize()
     {
         Instance ??= this;
-        
-        AudioPlayer = GameObjectUtil.New(dontDestroyOnLoad:true).AddComponent<AudioSource>();
 
         On.UIManager.StartNewGame += ICHook;
         Osmi.OsmiHooks.AfterEnterSaveHook += FSMEdits.CharmMenuFSMEdits;
 
-        ModHooks.SetPlayerBoolHook += DontSetBrokenBools;
+        ModHooks.SetPlayerBoolHook += DontSetBrokenCharmBools;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
         
         //break charms
-        ModHooks.AfterPlayerDeadHook += BreakCharmsOnPlayerDead;
+        Osmi.OsmiHooks.PlayerDeathHook += BreakCharmsOnPlayerDead;
         On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
         IL.HeroController.TakeDamage += BreakCharmOnDamageTaken; 
         
@@ -49,38 +51,34 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
 
         Osmi.OsmiHooks.AfterEnterSaveHook += UnEquipBrokenCharms;
 
-        LoadSprites();
+        LoadInGameResources();
+
+        //if they dont have ic ig they'll never have leg eater charms
+        if (ModHooks.GetMod(Consts.ICMod) is Mod) ItemChangerInterop.AddItems();
+        if (ModHooks.GetMod(Consts.RandoMod) is Mod) RandoHook.HookRando();
 
         //todo: check jonis working properly
         //todo: check health in bindings
         //todo: rando integration
     }
-
-    private void BreakCharmOnDamageTaken(ILContext il)
+    
+    private void ICHook(On.UIManager.orig_StartNewGame orig, UIManager self, bool permadeath, bool bossrush)
     {
-        ILCursor cursor = new(il);
-        //i want this to happen after damage calculated but before applied
-        //so go to the line after ModHooks.AfterTakeDamageHook is called
-        while (cursor.TryGotoNext(MoveType.After,
-                   i =>i.MatchCall<ModHooks>("AfterTakeDamage")))
-        {
-            cursor.GotoNext(); //go to the line after damage amount is stored in the stack
-            cursor.Emit(OpCodes.Ldarg_3); //put the value of damage amount on the stack
-            
-            cursor.EmitDelegate<Action<int>>((damageamount) =>
-            {
-                if (PlayerData.instance.GetBool(nameof(PlayerData.overcharmed)))
-                {
-                    damageamount *= 2;
-                }
+        ItemChangerMod.CreateSettingsProfile(overwrite: false, createDefaultModules: false);
 
-                if (globalSettings.BreakOnAllDamage && damageamount >= 1 ||
-                    globalSettings.BreakOnDoubleDamage && damageamount >= 2)
-                {
-                    CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate);
-                }
-            });
+        //i need legeater to remain where he is
+        ItemChangerMod.Modules.GetOrAdd<PreventLegEaterDeath>();
+        //if player dies with voidheart, i want it to be unequippable
+        ItemChangerMod.Modules.GetOrAdd<RemoveVoidHeartEffects>();
+        
+        //if it is randomized, RandoHook class will handle it
+        if (ModHooks.GetMod(Consts.RandoMod) is not Mod)
+        {
+            ItemChangerInterop.AddPlacements();
         }
+        
+        
+        orig(self, permadeath, bossrush);
     }
 
     private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)
@@ -94,7 +92,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         CharmUtils.SetAllCharmIcons();
     }
 
-    private bool DontSetBrokenBools(string name, bool orig)
+    private bool DontSetBrokenCharmBools(string name, bool orig)
     {
         return !new[]
         {
@@ -102,12 +100,6 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
             nameof(PlayerData.brokenCharm_24),
             nameof(PlayerData.brokenCharm_25)
         }.Contains(name) && orig;
-    }
-
-    private void ICHook(On.UIManager.orig_StartNewGame orig, UIManager self, bool permadeath, bool bossrush)
-    {
-        ItemChangerHook.HookIC();
-        orig(self, permadeath, bossrush);
     }
 
     private void UnEquipBrokenCharms()
@@ -150,8 +142,35 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
 
         return orig;
     }
+    private void BreakCharmOnDamageTaken(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        //i want this to happen after damage calculated but before applied
+        //so go to the line after ModHooks.AfterTakeDamageHook is called
+        while (cursor.TryGotoNext(MoveType.After,
+                   i =>i.MatchCall<ModHooks>("AfterTakeDamage")))
+        {
+            cursor.GotoNext(); //go to the line after damage amount is stored in the stack
+            cursor.Emit(OpCodes.Ldarg_3); //put the value of damage amount on the stack
+            
+            cursor.EmitDelegate<Action<int>>((damageamount) =>
+            {
+                //what game does
+                if (PlayerData.instance.GetBool(nameof(PlayerData.overcharmed)))
+                {
+                    damageamount *= 2;
+                }
+
+                if (globalSettings.BreakOnAllDamage && damageamount >= 1 ||
+                    globalSettings.BreakOnDoubleDamage && damageamount >= 2)
+                {
+                    CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate);
+                }
+            });
+        }
+    }
     
-    private void BreakCharmsOnPlayerDead()
+    private void BreakCharmsOnPlayerDead(GameObject _)
     {
         CharmUtils.BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate);
         CharmUtils.SetAllCharmIcons();
@@ -163,10 +182,11 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         yield return orig(self);
     }
 
-    private void LoadSprites()
+    private void LoadInGameResources()
     {
         Sprite[] allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
         AudioClip[] allAudioClips = Resources.FindObjectsOfTypeAll<AudioClip>();
+        GameObject[] allGameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
         
         charmCostIndicator = allSprites.First(s => s.name == "charm_UI__0000_charm_cost_02_lit");
         grimmChild1 = allSprites.First(s => s.name == "charm_grimmkin_01");
@@ -184,6 +204,8 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
 
         charmBuySuccess = allAudioClips.First(a => a.name == "shiny_item_pickup");
         charmBuyFail = allAudioClips.First(a => a.name == "sword_hit_reject");
+
+        AudioPlayerPrefab = allGameObjects.First(a => a.name == "Audio Player Actor");
     }
     private void SetIcons_CharmIconListStart(On.CharmIconList.orig_Start orig, CharmIconList self)
     {
