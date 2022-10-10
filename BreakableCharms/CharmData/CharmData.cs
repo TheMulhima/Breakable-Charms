@@ -21,20 +21,7 @@ public class CharmData
     
     public bool isBroken;
 
-    private CharmState _c;
-    public CharmState charmState
-    {
-        get
-        {
-            Modding.Logger.LogWarn($"getting {charmNum} {_c}");
-            return _c;
-        }
-        set
-        {
-            Modding.Logger.LogWarn($"setting {charmNum} from {_c} to {value}");
-            _c = value;
-        }
-    }
+    public CharmState charmState;
 
     public int charmNum;
     
