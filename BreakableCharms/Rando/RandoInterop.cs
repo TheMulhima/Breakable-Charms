@@ -1,7 +1,10 @@
 ﻿using ItemChanger.UIDefs;
-using Modding.Menu;
+using Osmi.Game;
+using RandomizerCore;
 using RandomizerCore.Logic;
 using RandomizerCore.LogicItems;
+using RandomizerCore.LogicItems.Templates;
+using RandomizerMod.Extensions;
 using RandomizerMod.RC;
 using RandomizerMod.Settings;
 
@@ -22,9 +25,59 @@ public static class RandoInterop
     {
         if (!BreakableCharms.globalSettings.RandomizeCharmLocations || !gs.PoolSettings.Charms) return;
         
-        foreach (var charm in BreakableCharms.RandoCharmList)
+        foreach (var charmName in BreakableCharms.RandoReplacementCharmList.Concat(BreakableCharms.RandoAdditionCharmList).Select(c => c.name))
         {
-            lmb.AddItem(new EmptyItem(charm.name));
+            lmb.AddTemplateItem(new BranchedItemTemplate(
+                Name: charmName,
+                Logic: charmName.RemoveSuffix(),
+                FalseItem: new MultiItemTemplate(charmName, new[]
+                {
+                    (charmName.RemoveSuffix(), 1),
+                    (Consts.LogicCharms, 1)
+                }),
+                TrueItem: new SingleItemTemplate(charmName, (charmName.RemoveSuffix(), 1))
+            ));
+        }
+
+        if (gs.PoolSettings.GrimmkinFlames)
+        {
+            //grimmchild1
+
+            foreach (var charmName in GrimmChildItems)
+            {
+                lmb.AddTemplateItem(new CappedItemTemplate(
+                    Name: charmName,
+                    Effects: new []
+                    {
+                        ("Grimmchild", 1),
+                        (Consts.LogicCharms, 1)
+                    },
+                    Cap: ("Grimmchild", 1)
+                    ));
+            }
+        }
+        else
+        {
+            //grimmchild2
+            
+            foreach (var charmName in GrimmChildItems)
+            {
+                lmb.AddTemplateItem(new CappedItemTemplate(
+                    Name: charmName,
+                    Effects: new []
+                    {
+                        ("Grimmchild", 1),
+                        (Consts.LogicCharms, 1),
+                        ("FLAMES", 6)
+                    },
+                    Cap: ("Grimmchild", 1)
+                ));
+            }
+        }
+
+        foreach (var charm in RoyalCharmItems)
+        {
+            lmb.AddItem(new EmptyItem(charm));
         }
     }
 
@@ -38,47 +91,73 @@ public static class RandoInterop
             rb.RemoveItemByName(ItemNames.Unbreakable_Strength);
             
             //just add more locations next to original charms to account for the 80ish more items im adding
-            foreach (var (_, charmName) in Dictionaries.CharmNameFromID)
+            foreach (var (_, charmName) in Dictionaries.ICCharmNameFromID)
             {
                 rb.AddLocationByName(CharmLocationLookup(charmName), count: 2);
             }
 
             //add all my items to the ranomized items
-            foreach (var charm in BreakableCharms.RandoCharmList)
+            foreach (var charm in BreakableCharms.RandoAdditionCharmList)
             {
                 rb.AddItemByName(charm.name);
             }
             
-            foreach (var (charmNum, charmName) in Dictionaries.CharmNameFromID)
+            foreach (var charm in BreakableCharms.RandoReplacementCharmList)
+            {
+                rb.ReplaceItem(charm.name.RemoveSuffix(), charm.name);
+            }
+
+            foreach (var charm in RoyalCharmItems)
+            {
+                rb.AddItemByName(charm);
+            }
+            
+            ItemChangerInterop.CreateGrimmChildItemsForRando(isGrimmchild1: rb.gs.PoolSettings.GrimmkinFlames);
+            
+            foreach (var charm in GrimmChildItems)
+            {
+                if (GrimmChildItems.IndexOf(charm) == 0)
+                {
+                    rb.ReplaceItem(
+                        rb.gs.PoolSettings.GrimmkinFlames ? ItemNames.Grimmchild1 : ItemNames.Grimmchild2,
+                        charm);
+                }
+                else
+                {
+                    rb.AddItemByName(charm);
+                }
+            }
+            
+
+            foreach (var charmName in BreakableCharms.RandoReplacementCharmList
+                         .Concat(BreakableCharms.RandoAdditionCharmList).Select(c => c.name))
             {
                 rb.EditItemRequest(charmName, info =>
                 {
-                    info.realItemCreator = (icf, _) =>
+                    info.getItemDef = () => new()
                     {
-                        var newcharm = icf.MakeItem(charmName);
-                        newcharm.name = charmName + Consts.DelicateSuffix;
-                        newcharm.UIDef = new MsgUIDef
-                        {
-                            name = new BoxedString(Language.Language
-                                .Get($"{Consts.LangDelicateKey}CHARM_NAME_{charmNum}", "UI").Replace("<br>", "\n")),
-                            shopDesc = new BoxedString(
-                                Language.Language.Get($"{Consts.LangDelicateKey}CHARM_DESC_{charmNum}", "UI")),
-                            sprite = new BoxedSprite(Finder.GetItem(charmName).UIDef.GetSprite())
-                        };
-                            
-                        newcharm.tags = new List<Tag>
-                        {
-                            new ItemChainTag
-                            {
-                                predecessor = null,
-                                successor = charmName + Consts.FragileSuffix
-                            }
-                        };
-
-                        return newcharm;
+                        Name = charmName,
+                        Pool = "Charm",
+                        MajorItem = false,
+                        PriceCap = 500,
                     };
                 });
             }
+            
+            foreach (var charm in GrimmChildItems)
+            {
+                rb.EditItemRequest(charm, info =>
+                {
+                    info.getItemDef = () => new()
+                    {
+                        Name = charm,
+                        Pool = "Charm",
+                        MajorItem = false,
+                        PriceCap = 500,
+                    };
+                });
+            }
+
         }
         else
         {
@@ -112,4 +191,16 @@ public static class RandoInterop
             _ => charmName,
         };
     }
+
+    private static List<string> GrimmChildItems = new List<string>()
+    {
+        "Grimmchild".GetDelicateName(),
+        "Grimmchild".GetFragileName(),
+        "Grimmchild".GetUnbreakableName()
+    };
+    private static List<string> RoyalCharmItems = new List<string>()
+    {
+        Consts.RoyalCharmItemName.GetFragileName(), 
+        Consts.RoyalCharmItemName.GetUnbreakableName()
+    };
 }

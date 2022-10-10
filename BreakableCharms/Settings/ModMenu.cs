@@ -7,22 +7,22 @@ public static class ModMenu
     {
         MenuRef ??= new Menu("Breakable Charms", new Element[]
         {
-            BoolOption("Break on any damage", 
+            BoolOption("Break delicate charms on any damage", 
                 "Should charms break on taking any type of damage",
                 b =>
                 {
-                    BreakableCharms.globalSettings.BreakOnAllDamage = b;
+                    BreakableCharms.globalSettings.Break_DelicateCharms_On_AllDamage = b;
                     MenuRef.Find("DoubleDamage").isVisible = !b;
                     MenuRef.Update();
 
                 },
-                () => BreakableCharms.globalSettings.BreakOnAllDamage),
+                () => BreakableCharms.globalSettings.Break_DelicateCharms_On_AllDamage),
             
-            BoolOption("Break on double damage", 
+            BoolOption("Break delicate charms on double damage", 
                 "Should charms break on taking double damage",
-                b => BreakableCharms.globalSettings.BreakOnDoubleDamage = b,
-                () => BreakableCharms.globalSettings.BreakOnDoubleDamage, 
-                Id:"DoubleDamage", isVisible:BreakableCharms.globalSettings.BreakOnAllDamage),
+                b => BreakableCharms.globalSettings.Break_DelicateCharms_On_DoubleDamage = b,
+                () => BreakableCharms.globalSettings.Break_DelicateCharms_On_DoubleDamage, 
+                Id:"DoubleDamage", isVisible:BreakableCharms.globalSettings.Break_DelicateCharms_On_AllDamage),
         });
         return MenuRef.GetMenuScreen(modlistmenu);
     }

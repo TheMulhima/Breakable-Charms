@@ -58,8 +58,8 @@ public sealed class RoyalCharmData : CharmData
         {
             return RoyalCharmState switch
             {
-                1 => BreakableCharms.kingsFragment,
-                2 => BreakableCharms.queensFragment,
+                1 => BreakableCharms.queensFragment,
+                2 => BreakableCharms.kingsFragment,
                 3 => BreakableCharms.kingSoul,
                 4 => Dictionaries.UnbreakableCharmSpriteFromID[charmNum],
                 _ => throw new InvalidOperationException()

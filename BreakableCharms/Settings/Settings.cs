@@ -61,6 +61,6 @@ public sealed class LocalSettings
 public sealed class GlobalSettings
 {
     public bool RandomizeCharmLocations = false;
-    public bool BreakOnAllDamage = false;
-    public bool BreakOnDoubleDamage = true;
+    public bool Break_DelicateCharms_On_AllDamage = false;
+    public bool Break_DelicateCharms_On_DoubleDamage = true;
 }

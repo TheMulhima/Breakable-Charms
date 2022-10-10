@@ -18,6 +18,12 @@ public static class Extensions
     public static string RemoveExcessData(this string key, string identifier) => key.Replace("#!#", "").Replace(identifier, "");
     public static int GetCharmNumFromKey(this string key) => int.Parse(key.Split('_')[2]);
     public static string MakeFirstCharLower(this string text) => text[0].ToString().ToLower() + text.Substring(1);
+    public static string RemoveSuffix(this string charmName) => charmName.Replace(Consts.DelicateSuffix, "")
+        .Replace(Consts.FragileSuffix, "").Replace(Consts.UnbreakableSuffix, "");
+
+    public static string GetDelicateName(this string charmName) => charmName.RemoveSuffix() + Consts.DelicateSuffix;
+    public static string GetFragileName(this string charmName) => charmName.RemoveSuffix() + Consts.FragileSuffix;
+    public static string GetUnbreakableName(this string charmName) => charmName.RemoveSuffix() + Consts.UnbreakableSuffix;
     
     #endregion
 

@@ -39,15 +39,15 @@ public sealed class GreedData : CharmData
         }
         if (key.Contains(Consts.LangDelicateKey))
         {
-            return "A delicate charm that causes the bearer to find more Geo when defeating enemies.";
+            return "A delicate charm that causes the bearer to find more Geo when defeating enemies." + Consts.DelicateCharmDesc;
         }
         if (key.Contains(Consts.LangFragileKey))
         {
-            return "A fragile charm that causes the bearer to find more Geo when defeating enemies.";
+            return "A fragile charm that causes the bearer to find more Geo when defeating enemies." + Consts.FragileCharmDesc;
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
-            return "An unbreakable charm that causes the bearer to find more Geo when defeating enemies.";
+            return "An unbreakable charm that causes the bearer to find more Geo when defeating enemies." + Consts.UnbreakableCharmDesc;
         }
 
         return "";
@@ -77,11 +77,11 @@ public sealed class GreedData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A Delicate charm that causes the bearer to find more Geo when defeating enemies.";
+                return "A Delicate charm that causes the bearer to find more Geo when defeating enemies." + Consts.DelicateCharmDesc;
             case CharmState.Fragile:
-                return "A Fragile charm that causes the bearer to find more Geo when defeating enemies.";
+                return "A Fragile charm that causes the bearer to find more Geo when defeating enemies."+ Consts.FragileCharmDesc;
             case CharmState.Unbreakable:
-                return "An unbreakable charm that causes the bearer to find more Geo when defeating enemies.";
+                return "An unbreakable charm that causes the bearer to find more Geo when defeating enemies."+ Consts.UnbreakableCharmDesc;
         }
 
         return "";

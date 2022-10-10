@@ -19,7 +19,8 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     
     //the difference between them is the tags attached
     public static List<AbstractItem> ShopCharmList = new ();
-    public static List<AbstractItem> RandoCharmList = new ();
+    public static List<AbstractItem> RandoAdditionCharmList = new ();
+    public static List<AbstractItem> RandoReplacementCharmList = new ();
 
     public static LocalSettings localSettings { get; private set; } = new ();
     public void OnLoadLocal(LocalSettings s) => localSettings = s;
@@ -140,7 +141,17 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
             }
         }
 
-        return orig;
+        return key switch
+        {
+            Consts.LangDelicateRoyalCharmName => "Delicate Royal Charm",
+            Consts.LangFragileRoyalCharmName => "Fragile Royal Charm",
+            Consts.LangUnbreakableRoyalCharmName => "Unbreakable Royal Charm",
+            Consts.LangDelicateRoyalCharmDesc => "Obtain the delicate version of royal charm (applies to fragments, kingsoul and voidheart).",
+            Consts.LangFragileRoyalCharmDesc => "Obtain the fragile version of royal charm (applies to fragments, kingsoul and voidheart).",
+            Consts.LangUnbreakableRoyalCharmDesc => "Obtain the unbreakable version of royal charm (applies to fragments, kingsoul and voidheart).",
+            
+            _ => orig,
+        };
     }
     private void BreakCharmOnDamageTaken(ILContext il)
     {
@@ -161,8 +172,8 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
                     damageamount *= 2;
                 }
 
-                if (globalSettings.BreakOnAllDamage && damageamount >= 1 ||
-                    globalSettings.BreakOnDoubleDamage && damageamount >= 2)
+                if (globalSettings.Break_DelicateCharms_On_AllDamage && damageamount >= 1 ||
+                    globalSettings.Break_DelicateCharms_On_DoubleDamage && damageamount >= 2)
                 {
                     CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate);
                 }
@@ -197,7 +208,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         queensFragment = allSprites.First(s => s.name == "charm_white_right");
         kingSoul = allSprites.First(s => s.name == "charm_white_full");
 
-        foreach (var (charmNum, spriteName) in Dictionaries.CharmInGameSpriteNameFromID)
+        foreach (var (charmNum, spriteName) in Dictionaries.InGameSpriteNameFromID)
         {
             Dictionaries.UnbreakableCharmSpriteFromID[charmNum] = allSprites.First(s => s.name == spriteName);
         }

@@ -19,7 +19,22 @@ public class CharmData
     }
     
     public bool isBroken;
-    public CharmState charmState;
+
+    private CharmState _c;
+    public CharmState charmState
+    {
+        get
+        {
+            Modding.Logger.LogWarn($"getting {charmNum} {_c}");
+            return _c;
+        }
+        set
+        {
+            Modding.Logger.LogWarn($"setting {charmNum} from {_c} to {value}");
+            _c = value;
+        }
+    }
+
     public int charmNum;
     
     /// <summary>
@@ -86,17 +101,17 @@ public class CharmData
         if (key.Contains(Consts.LangDelicateKey))
         {
             orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangDelicateKey);
-            return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+            return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.DelicateCharmDesc;
         }
         if (key.Contains(Consts.LangFragileKey))
         {
             orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangFragileKey);
-            return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+            return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.FragileCharmDesc;
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
             orig = Extensions.GetOriginalText(key,sheettitle,Consts.LangUnbreakableKey);
-            return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+            return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.UnbreakableCharmDesc;
         }
 
         return "";
@@ -126,11 +141,11 @@ public class CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.DelicateCharmDesc;
             case CharmState.Fragile:
-                return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.FragileCharmDesc;
             case CharmState.Unbreakable:
-                return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
+                return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.UnbreakableCharmDesc;
         }
 
         return "";

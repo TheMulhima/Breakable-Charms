@@ -39,15 +39,15 @@ public sealed class StrengthData : CharmData
         }
         if (key.Contains(Consts.LangDelicateKey))
         {
-            return "A delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+            return "A delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail." + Consts.DelicateCharmDesc;
         }
         if (key.Contains(Consts.LangFragileKey))
         {
-            return "A fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+            return "A fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail." + Consts.FragileCharmDesc;
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
-            return "An unbreakable charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+            return "An unbreakable charm that strengthens the bearer, increasing the damage they deal to enemies with their nail." + Consts.UnbreakableCharmDesc;
         }
 
         return "";
@@ -77,11 +77,11 @@ public sealed class StrengthData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+                return "A delicate charm that strengthens the bearer, increasing the damage they deal to enemies with their nail."+ Consts.DelicateCharmDesc;
             case CharmState.Fragile:
-                return "A fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+                return "A fragile charm that strengthens the bearer, increasing the damage they deal to enemies with their nail." + Consts.FragileCharmDesc;
             case CharmState.Unbreakable:
-                return "An unbreakable charm that strengthens the bearer, increasing the damage they deal to enemies with their nail.";
+                return "An unbreakable charm that strengthens the bearer, increasing the damage they deal to enemies with their nail." + Consts.UnbreakableCharmDesc;
         }
 
         return "";

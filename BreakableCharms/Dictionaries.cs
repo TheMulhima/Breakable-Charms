@@ -7,7 +7,7 @@ public static class Dictionaries
     public static readonly Dictionary<int, Sprite> DelicateCharmSpriteFromID = new();
     public static readonly Dictionary<int, Sprite> BrokenCharmSpriteFromID = new();
 
-    public static readonly Dictionary<int, string> CharmNameFromID = new()
+    public static readonly Dictionary<int, string> ICCharmNameFromID = new()
     {
         {1, "Gathering_Swarm"},
         {2, "Wayward_Compass"},
@@ -44,13 +44,11 @@ public static class Dictionaries
         {33, "Spell_Twister"},
         {34, "Deep_Focus"},
         {35, "Grubberfly's_Elegy"},
-        {36, "Void_Heart"},
         {37, "Sprintmaster"},
         {38, "Dreamshield"},
         {39, "Weaversong"},
-        {40, "Grimmchild2"},
     };
-    public static readonly Dictionary<int, string> CharmInGameSpriteNameFromID = new()
+    public static readonly Dictionary<int, string> InGameSpriteNameFromID = new()
     {
         { 1, "charm_sprite_02" },
         { 2, "charm_sprite_03" },

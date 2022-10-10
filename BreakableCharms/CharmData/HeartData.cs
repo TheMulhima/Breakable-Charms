@@ -39,15 +39,15 @@ public sealed class HeartData : CharmData
         }
         if (key.Contains(Consts.LangDelicateKey))
         {
-            return "A delicate charm that increases the health of the bearer, allowing them to take more damage.";
+            return "A delicate charm that increases the health of the bearer, allowing them to take more damage." + Consts.DelicateCharmDesc;
         }
         if (key.Contains(Consts.LangFragileKey))
         {
-            return "A fragile charm that increases the health of the bearer, allowing them to take more damage.";
+            return "A fragile charm that increases the health of the bearer, allowing them to take more damage." + Consts.FragileCharmDesc;
         }
         if (key.Contains(Consts.LangUnbreakableKey))
         {
-            return "An unbreakable charm that increases the health of the bearer, allowing them to take more damage.";
+            return "An unbreakable charm that increases the health of the bearer, allowing them to take more damage." + Consts.UnbreakableCharmDesc;
         }
 
         return "";
@@ -77,11 +77,11 @@ public sealed class HeartData : CharmData
         switch (charmState)
         {
             case CharmState.Delicate:
-                return "A Delicate charm that increases the health of the bearer, allowing them to take more damage.";
+                return "A Delicate charm that increases the health of the bearer, allowing them to take more damage." + Consts.DelicateCharmDesc;
             case CharmState.Fragile:
-                return "A Fragile charm that increases the health of the bearer, allowing them to take more damage.";
+                return "A Fragile charm that increases the health of the bearer, allowing them to take more damage." + Consts.FragileCharmDesc;
             case CharmState.Unbreakable:
-                return "An unbreakable charm that increases the health of the bearer, allowing them to take more damage.";
+                return "An unbreakable charm that increases the health of the bearer, allowing them to take more damage." + Consts.UnbreakableCharmDesc;
         }
 
         return "";
