@@ -175,7 +175,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
                 if (globalSettings.Break_DelicateCharms_On_AllDamage && damageamount >= 1 ||
                     globalSettings.Break_DelicateCharms_On_DoubleDamage && damageamount >= 2)
                 {
-                    CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate);
+                    CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate or CharmState.UnObtained);
                 }
             });
         }
@@ -183,13 +183,13 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     
     private void BreakCharmsOnPlayerDead(GameObject _)
     {
-        CharmUtils.BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate);
+        CharmUtils.BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate or CharmState.UnObtained);
         CharmUtils.SetAllCharmIcons();
     }
 
     private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
     {
-        CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate);
+        CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate or CharmState.UnObtained);
         yield return orig(self);
     }
 

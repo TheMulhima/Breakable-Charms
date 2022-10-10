@@ -2,7 +2,8 @@
 
 public enum CharmState
 {
-    Delicate = 0,
+    UnObtained = 0,
+    Delicate,
     Fragile,
     Unbreakable,
 }
@@ -15,7 +16,7 @@ public class CharmData
     {
         charmNum = _charmNum;
         isBroken = false;
-        charmState = CharmState.Delicate;
+        charmState = CharmState.UnObtained;
     }
     
     public bool isBroken;
@@ -50,10 +51,9 @@ public class CharmData
         
         return charmState switch
         {
-            CharmState.Delicate => Dictionaries.DelicateCharmSpriteFromID[charmNum],
             CharmState.Fragile => Dictionaries.FragileCharmSpriteFromID[charmNum],
             CharmState.Unbreakable => Dictionaries.UnbreakableCharmSpriteFromID[charmNum],
-            _ => throw new InvalidOperationException()
+            _ => Dictionaries.DelicateCharmSpriteFromID[charmNum],
         };
     }
 
@@ -65,6 +65,7 @@ public class CharmData
             orig = Extensions.GetOriginalText(key, sheettitle,Consts.LangRepairKey);
             string prefix = charmState switch
             {
+                CharmState.UnObtained => "Delicate ",
                 CharmState.Delicate => "Delicate ",
                 CharmState.Fragile => "Fragile ",
                 _ => ""
@@ -123,6 +124,7 @@ public class CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "Delicate " + orig;
             case CharmState.Fragile:
@@ -140,6 +142,7 @@ public class CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n") + Consts.DelicateCharmDesc;
             case CharmState.Fragile:

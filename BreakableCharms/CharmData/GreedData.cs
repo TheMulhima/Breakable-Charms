@@ -9,6 +9,7 @@ public sealed class GreedData : CharmData
         {
             string prefix = charmState switch
             {
+                CharmState.UnObtained => "Delicate ",
                 CharmState.Delicate => "Delicate ",
                 CharmState.Fragile => "Fragile ",
                 _ => ""
@@ -59,6 +60,7 @@ public sealed class GreedData : CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "Delicate Greed";
             case CharmState.Fragile:
@@ -76,6 +78,7 @@ public sealed class GreedData : CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "A Delicate charm that causes the bearer to find more Geo when defeating enemies." + Consts.DelicateCharmDesc;
             case CharmState.Fragile:

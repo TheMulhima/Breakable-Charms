@@ -9,6 +9,7 @@ public sealed class HeartData : CharmData
         {
             string prefix = charmState switch
             {
+                CharmState.UnObtained => "Delicate ",
                 CharmState.Delicate => "Delicate ",
                 CharmState.Fragile => "Fragile ",
                 _ => ""
@@ -59,6 +60,7 @@ public sealed class HeartData : CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "Delicate Heart";
             case CharmState.Fragile:
@@ -76,6 +78,7 @@ public sealed class HeartData : CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "A Delicate charm that increases the health of the bearer, allowing them to take more damage." + Consts.DelicateCharmDesc;
             case CharmState.Fragile:

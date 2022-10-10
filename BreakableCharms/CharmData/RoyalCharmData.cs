@@ -46,7 +46,7 @@ public sealed class RoyalCharmData : CharmData
             return BrokenSprites[RoyalCharmState];
         }
 
-        if (charmState is CharmState.Delicate)
+        if (charmState is CharmState.Delicate or CharmState.UnObtained)
         {
             return DelicateSprites[RoyalCharmState];
         }
@@ -86,6 +86,7 @@ public sealed class RoyalCharmData : CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "Delicate " + orig;
             case CharmState.Fragile:
@@ -104,6 +105,7 @@ public sealed class RoyalCharmData : CharmData
                 
         switch (charmState)
         {
+            case CharmState.UnObtained:
             case CharmState.Delicate:
                 return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Fragile:

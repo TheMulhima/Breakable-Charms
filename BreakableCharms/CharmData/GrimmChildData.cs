@@ -37,7 +37,7 @@ public sealed class GrimmChildData : CharmData
             return BrokenSprites[GrimmChildLevel];
         }
 
-        if (charmState is CharmState.Delicate)
+        if (charmState is CharmState.Delicate or CharmState.UnObtained)
         {
             return DelicateSprites[GrimmChildLevel];
         }
