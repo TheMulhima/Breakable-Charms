@@ -1,0 +1,7 @@
+Satchel
+Osmi
+ItemChanger
+Randomizer 4
+RandomizerCore
+MenuChanger
+ConnectionMetadataInjector
