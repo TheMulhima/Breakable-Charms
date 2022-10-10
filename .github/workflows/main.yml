@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: BreakableCharms
-          path: ./BreakableCharms/
+          path: ./BreakableCharms/BreakableCharms.zip/
