@@ -12,8 +12,8 @@
         <NoWarn>CS1591</NoWarn>
         <HollowKnightFolder Condition="$([MSBuild]::IsOSPlatform('Windows'))">C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed</HollowKnightFolder>
         <OutputDirectory Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(HollowKnightFolder)/Mods</OutputDirectory>
-        <HollowKnightFolder Condition="$([MSBuild]::IsOSPlatform('Linux'))" >../HKManaged</HollowKnightFolder>
-        <OutputDirectory Condition="$([MSBuild]::IsOSPlatform('Linux'))" >$(SolutionDir)</OutputDirectory>
+        <HollowKnightFolder Condition="$([MSBuild]::IsOSPlatform('Linux'))">../HKManaged</HollowKnightFolder>
+        <OutputDirectory Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(SolutionDir)</OutputDirectory>
 
         <PlatformTarget>x64</PlatformTarget>
     </PropertyGroup>

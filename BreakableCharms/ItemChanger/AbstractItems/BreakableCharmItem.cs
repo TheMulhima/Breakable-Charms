@@ -1,8 +1,4 @@
-﻿using ItemChanger.Util;
-using Osmi.Game;
-using CharmItem = ItemChanger.Items.CharmItem;
-
-namespace BreakableCharms.ItemChanger;
+﻿namespace BreakableCharms.ItemChanger;
 
 public sealed class BreakableCharmItem : global::ItemChanger.Items.CharmItem
 {

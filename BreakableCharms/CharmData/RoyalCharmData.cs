@@ -4,7 +4,7 @@ public sealed class RoyalCharmData : CharmData
     public RoyalCharmData():base(36) {}
     public override bool HasSpecialSprite => true;
 
-    public int RoyalCharmState
+    private static int RoyalCharmState
     {
         get
         {
@@ -39,7 +39,7 @@ public sealed class RoyalCharmData : CharmData
         
     public override Sprite GetSprite()
     {
-        if (RoyalCharmState == 0) return Dictionaries.UnbreakableCharmSpriteFromID[charmNum];
+        if (RoyalCharmState == 0) return DelicateSprites[3];
         
         if (isBroken)
         {
@@ -62,7 +62,7 @@ public sealed class RoyalCharmData : CharmData
                 2 => BreakableCharms.kingsFragment,
                 3 => BreakableCharms.kingSoul,
                 4 => Dictionaries.UnbreakableCharmSpriteFromID[charmNum],
-                _ => throw new InvalidOperationException()
+                _ => BreakableCharms.kingSoul,
             };
         }
         return null;
@@ -88,10 +88,13 @@ public sealed class RoyalCharmData : CharmData
         {
             case CharmState.UnObtained:
             case CharmState.Delicate:
+                if (RoyalCharmState == 0) return "Delicate Royal Charm";
                 return "Delicate " + orig;
             case CharmState.Fragile:
+                if (RoyalCharmState == 0) return "Fragile Royal Charm";
                 return "Fragile " + orig;
             case CharmState.Unbreakable:
+                if (RoyalCharmState == 0) return "Unbreakable Royal Charm";
                 return "Unbreakable " + orig;
         }
 
@@ -107,10 +110,13 @@ public sealed class RoyalCharmData : CharmData
         {
             case CharmState.UnObtained:
             case CharmState.Delicate:
+                if (RoyalCharmState == 0) return "A delicate shell for the royal charm." + Consts.DelicateCharmDesc;
                 return "A delicate charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Fragile:
+                if (RoyalCharmState == 0) return "A fragile shell for the royal charm." + Consts.DelicateCharmDesc;
                 return "A fragile charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
             case CharmState.Unbreakable:
+                if (RoyalCharmState == 0) return "An unbreakable shell for the royal charm." + Consts.DelicateCharmDesc;
                 return "An unbreakable charm that " + orig.MakeFirstCharLower().Replace("<br>", "\n");
         }
 

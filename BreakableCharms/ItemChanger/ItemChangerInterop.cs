@@ -159,6 +159,11 @@ public static class ItemChangerInterop
     {
         string charmName = "Grimmchild";
         int charmNum = (int)Charm.Grimmchild;
+
+        Finder.UndefineCustomItem(charmName.GetDelicateName());
+        Finder.UndefineCustomItem(charmName.GetFragileName());
+        Finder.UndefineCustomItem(charmName.GetUnbreakableName());
+            
         AbstractItem delicateCharm, fragileCharm, unbreakableCharm;
 
         if (isGrimmchild1)
@@ -284,7 +289,7 @@ public static class ItemChangerInterop
         
         //i dont need a delicate charm. i dont wanna replace any royal charm items
 
-        var fragileCharm = new BreakableCharmItem
+        var fragileCharm = new BreakableRoyalCharmItem
         {
             charmNum = charmNum,
             newState = CharmState.Fragile,
@@ -293,14 +298,14 @@ public static class ItemChangerInterop
             {
                 name = new BoxedString(Language.Language.Get($"{Consts.LangFragileRoyalCharmName}", "UI").Replace("<br>", "\n")),
                 shopDesc = new BoxedString(Language.Language.Get($"{Consts.LangFragileRoyalCharmDesc}", "UI")),
-                sprite = new BoxedSprite(Finder.GetItem(ItemNames.Void_Heart).UIDef.GetSprite())
+                sprite = new BoxedSprite(Finder.GetItem(ItemNames.Kingsoul).UIDef.GetSprite())
             },
             tags = CreateRandoTagList(predecessor: null,
                 successor: charmName.GetUnbreakableName())
         };
 
 
-        var unbreakableCharm = new BreakableCharmItem
+        var unbreakableCharm = new BreakableRoyalCharmItem
         {
             charmNum = charmNum,
             newState = CharmState.Unbreakable,
@@ -309,7 +314,7 @@ public static class ItemChangerInterop
             {
                 name = new BoxedString(Language.Language.Get($"{Consts.LangUnbreakableRoyalCharmName}", "UI").Replace("<br>", "\n")),
                 shopDesc = new BoxedString(Language.Language.Get($"{Consts.LangUnbreakableRoyalCharmDesc}", "UI")),
-                sprite = new BoxedSprite(Finder.GetItem(ItemNames.Void_Heart).UIDef.GetSprite())
+                sprite = new BoxedSprite(Finder.GetItem(ItemNames.Kingsoul).UIDef.GetSprite())
             },
             tags = CreateRandoTagList(predecessor: charmName.GetFragileName(),
                 successor: null)
