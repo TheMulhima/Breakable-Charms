@@ -7,6 +7,6 @@ public sealed class CharmInCorrectStateReq: Tag, IShopRequirementTag
 
     public bool MeetsRequirement =>
         //check for if player has charm and it has the required state
-        PlayerData.instance.GetBool($"gotCharm_{charmNum}") &&
+        PlayerDataAccess.GetBool($"gotCharm_{charmNum}") &&
         BreakableCharms.localSettings.BrokenCharms[charmNum].charmState == requiredState;
 }

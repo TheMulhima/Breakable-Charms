@@ -9,9 +9,9 @@ public sealed class RoyalCharmData : CharmData
         get
         {
             //i dont trust people to set royal charm state
-            if (PlayerData.instance.GetBool(nameof(PlayerData.gotShadeCharm))) return 4;
+            if (PlayerDataAccess.gotShadeCharm) return 4;
             
-            return PlayerData.instance.GetInt(nameof(PlayerData.royalCharmState));
+            return PlayerDataAccess.royalCharmState;
         }
     }
 

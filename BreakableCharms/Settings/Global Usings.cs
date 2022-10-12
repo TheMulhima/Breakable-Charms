@@ -1,7 +1,6 @@
 ﻿global using Modding;
 global using System.Collections;
 global using System.Collections.Generic;
-global using System.Reflection;
 global using UnityEngine;
 global using Satchel;
 global using Satchel.BetterMenus;
@@ -14,9 +13,8 @@ global using ItemChanger.Tags;
 global using ItemChanger.Locations;
 global using ItemChanger.Placements;
 global using Satchel.Futils;
+global using HKMirror;
 global using BreakableCharms.CharmData;
 global using BreakableCharms.ItemChanger;
 global using BreakableCharms.Settings;
 global using BreakableCharms.Randomizer;
-global using ReflectionHelper = Modding.ReflectionHelper;
-global using USceneManager = UnityEngine.SceneManagement.SceneManager;

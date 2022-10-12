@@ -93,15 +93,15 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     {
         return !new[]
         {
-            nameof(PlayerData.brokenCharm_23),
-            nameof(PlayerData.brokenCharm_24),
-            nameof(PlayerData.brokenCharm_25)
+            nameof(PlayerDataAccess.brokenCharm_23),
+            nameof(PlayerDataAccess.brokenCharm_24),
+            nameof(PlayerDataAccess.brokenCharm_25)
         }.Contains(name) && orig;
     }
 
     private void UnEquipBrokenCharms()
     {
-        PlayerData.instance.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
+        PlayerDataAccess.equippedCharms.ToList().ForEach(c =>
         {
             if (localSettings.BrokenCharms.ContainsKey(c) && localSettings.BrokenCharms[c].isBroken)
             {
@@ -163,7 +163,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
             cursor.EmitDelegate<Action<int>>((damageamount) =>
             {
                 //what game does
-                if (PlayerData.instance.GetBool(nameof(PlayerData.overcharmed)))
+                if (PlayerDataAccess.overcharmed)
                 {
                     damageamount *= 2;
                 }

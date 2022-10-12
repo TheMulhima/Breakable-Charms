@@ -6,7 +6,7 @@ public sealed class BreakableCharmItem : global::ItemChanger.Items.CharmItem
 
     public override void GiveImmediate(GiveInfo info)
     {
-        if (!PlayerData.instance.GetBool(gotBool))
+        if (!PlayerDataAccess.GetBool(gotBool))
         {
             base.GiveImmediate(info);
         }

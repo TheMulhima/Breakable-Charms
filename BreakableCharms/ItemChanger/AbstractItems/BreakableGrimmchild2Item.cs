@@ -6,7 +6,7 @@ public sealed class BreakableGrimmchild2Item : global::ItemChanger.Items.Grimmch
 
     public override void GiveImmediate(GiveInfo info)
     {
-        if (!PlayerData.instance.GetBool(gotBool))
+        if (!PlayerDataAccess.GetBool(gotBool))
         {
             base.GiveImmediate(info);
         }

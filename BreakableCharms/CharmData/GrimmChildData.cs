@@ -4,7 +4,7 @@ public sealed class GrimmChildData : CharmData
 {
     public GrimmChildData():base(40) {}
     public override bool HasSpecialSprite => true;
-    public int GrimmChildLevel => PlayerData.instance.GetInt(nameof(PlayerData.grimmChildLevel));
+    public int GrimmChildLevel => PlayerDataAccess.grimmChildLevel;
     public static Dictionary<int, Sprite> BrokenSprites = new Dictionary<int, Sprite>()
     {
         {1, SpriteUtils.LoadSpriteFromResources("Broken.Special.Charm_40_1")},

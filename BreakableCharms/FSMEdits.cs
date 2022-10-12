@@ -54,7 +54,7 @@ public static class FSMEdits
     {
         var charmNum = charmFSM.GetVariable<FsmInt>(CharmNumVariableName).Value;
         
-        if (PlayerData.instance.GetBool($"gotCharm_{charmNum}") &&
+        if (PlayerDataAccess.GetBool($"gotCharm_{charmNum}") &&
             BreakableCharms.localSettings.BrokenCharms.TryGetValue(charmNum, out var charmData) &&
             charmData.isBroken &&
             charmFSM.GetVariable<FsmBool>("Idle Collection").Value) //makes sure its not in equipped charms area
@@ -112,11 +112,11 @@ public static class FSMEdits
                     charmData.isBroken &&
                     charmFSM.GetVariable<FsmBool>("Idle Collection").Value)
                 {
-                    if (PlayerData.instance.GetInt(nameof(PlayerData.geo)) >= 200)
+                    if (PlayerDataAccess.geo >= 200)
                     {
                         RepairCharm(charmNum);
-                        PlayerData.instance.IntAdd(nameof(PlayerData.geo), -200);
-                        HeroController.instance.geoCounter.geoTextMesh.text = PlayerData.instance.GetInt(nameof(PlayerData.geo)).ToString();
+                        PlayerDataAccess.geo -= 200;
+                        HeroControllerR.geoCounter.geoTextMesh.text = PlayerDataAccess.geo.ToString();
                         AudioUtil.PlayOneShot(BreakableCharms.AudioPlayerPrefab, Vector3.zero, BreakableCharms.charmBuySuccess, 1f);
                     }
                     else
@@ -143,7 +143,7 @@ public static class FSMEdits
         BreakableCharms.localSettings.BrokenCharms[charmNum].isBroken = false;
         CharmUtils.SetAllCharmIcons(changeDetails: true, charmNumOfDetails: charmNum);
 
-        var notchCost = PlayerData.instance.GetInt($"charmCost_{charmNum}");
+        var notchCost = PlayerDataAccess.GetInt($"charmCost_{charmNum}");
         if (notchCost == 0)//void heart
         {
             costGo.gameObject.SetActive(false);

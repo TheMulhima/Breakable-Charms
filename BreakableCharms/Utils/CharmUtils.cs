@@ -9,45 +9,45 @@ public static class CharmUtils
     {
         if (charmNumBroken == (int)Charm.NailmastersGlory)
         {
-            ReflectionHelper.SetField(HeroController.instance, "nailChargeTime",
-            !PlayerData.instance.GetBool(nameof(PlayerData.equippedCharm_26))
-                ? HeroController.instance.NAIL_CHARGE_TIME_DEFAULT
-                : HeroController.instance.NAIL_CHARGE_TIME_CHARM);
+            HeroControllerR.nailChargeTime = 
+                !PlayerDataAccess.equippedCharm_26 ?
+                    HeroControllerR.NAIL_CHARGE_TIME_DEFAULT :
+                    HeroControllerR.NAIL_CHARGE_TIME_CHARM;
         }
         
         if (charmNumBroken == (int) Charm.UnbreakableHeart)
         {
-            PlayerData.instance.SetInt(nameof(PlayerData.maxHealth), PlayerData.instance.GetInt(nameof(PlayerData.maxHealthBase)));
+            PlayerDataAccess.maxHealth = PlayerDataAccess.maxHealthBase;
             
-            if (PlayerData.instance.GetInt(nameof(PlayerData.health)) > PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)))
+            if (PlayerDataAccess.health > PlayerDataAccess.maxHealth)
             {
-                PlayerData.instance.SetInt(nameof(PlayerData.health), PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)));    
+                PlayerDataAccess.health = PlayerDataAccess.maxHealth;    
             }
         }
 
         if (charmNumBroken == (int)Charm.Grimmchild)
         {
-            HeroController.instance.carefreeShieldEquipped = PlayerData.instance.GetBool(nameof(PlayerData.equippedCharm_40)) && 
-                                                             PlayerData.instance.GetInt(nameof(PlayerData.grimmChildLevel)) == 5;
+            HeroControllerR.carefreeShieldEquipped = PlayerDataAccess.equippedCharm_40 && 
+                                                             PlayerDataAccess.grimmChildLevel == 5;
         }
 
-        int oldHealthBlue = PlayerData.instance.GetInt(nameof(PlayerData.healthBlue));
+        int oldHealthBlue = PlayerDataAccess.healthBlue;
         
         if (charmNumBroken == (int)Charm.LifebloodHeart)
         {
-            PlayerData.instance.SetInt(nameof(PlayerData.healthBlue), (oldHealthBlue - 2).SetPositive());
+            PlayerDataAccess.healthBlue = (oldHealthBlue - 2).SetPositive();
         }
         if (charmNumBroken == (int)Charm.LifebloodCore)
         {
-            PlayerData.instance.SetInt(nameof(PlayerData.healthBlue), (oldHealthBlue - 4).SetPositive());
+            PlayerDataAccess.healthBlue = (oldHealthBlue - 4).SetPositive();
         }
 
         if (charmNumBroken == (int)Charm.JonisBlessing)
         {
-            PlayerData.instance.SetInt(nameof(PlayerData.joniHealthBlue), 0);
-            PlayerData.instance.SetInt(nameof(PlayerData.maxHealth), PlayerData.instance.GetInt(nameof(PlayerData.maxHealthBase)));
-            PlayerData.instance.SetInt(nameof(PlayerData.health), PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)));  
-            PlayerData.instance.SetBool("joniBeam", false);
+            PlayerDataAccess.joniHealthBlue = 0;
+            PlayerDataAccess.maxHealth = PlayerDataAccess.maxHealthBase;
+            PlayerDataAccess.health = PlayerDataAccess.maxHealth;
+            HeroControllerR.joniBeam = false;
         }
     }
     
@@ -104,7 +104,7 @@ public static class CharmUtils
     public static void BreakEquippedCharms(Func<CharmState, bool> hasCorrectCharmState)
     {
         bool anyBroken = false;
-        PlayerData.instance.GetVariable<List<int>>("equippedCharms").ToList().ForEach(c =>
+        PlayerDataAccess.equippedCharms.ToList().ForEach(c =>
         {
             if (BreakableCharms.localSettings.BrokenCharms.ContainsKey(c) && 
                 hasCorrectCharmState(BreakableCharms.localSettings.BrokenCharms[c].charmState))
@@ -119,7 +119,7 @@ public static class CharmUtils
         {
             PlayMakerFSM.BroadcastEvent("CHARM INDICATOR CHECK");
             //most likely always gonna run
-            if (!PlayerData.instance.GetBool(nameof(PlayerData.atBench)))
+            if (!PlayerDataAccess.atBench)
             {
                 PlayMakerFSM.BroadcastEvent("CHARM EQUIP CHECK");
             }
@@ -145,7 +145,7 @@ public static class CharmUtils
                     {
                         //get the health number and check if its not more than max health
                         if (int.Parse(healthGo.name.Split(' ')[1]) <=
-                            PlayerData.instance.GetInt(nameof(PlayerData.maxHealth)) &&
+                            PlayerDataAccess.maxHealth &&
                             
                             //what happens when mask is broken (if its already broken dont bother
                             !(healthGo.GetComponent<MeshRenderer>().enabled && !healthGo.Find("Idle").GetComponent<MeshRenderer>().enabled)
