@@ -5,4 +5,4 @@ Randomizer 4
 RandomizerCore
 MenuChanger
 ConnectionMetadataInjector
-HKMirror from https://github.com/TheMulhima/HKMirror/suites/8747107421/artifacts/396105958
+HKMirror from https://cdn.discordapp.com/attachments/879130542501658624/1029892382134644776/HKMirror.zip
