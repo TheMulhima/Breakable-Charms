@@ -1,5 +1,6 @@
 ﻿using Osmi.Game;
 using TMPro;
+using HKMirror.Reflection.SingletonClasses;
 
 namespace BreakableCharms;
 

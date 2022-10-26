@@ -2,6 +2,8 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Osmi.Game;
+using HKMirror.Hooks.OnHooks;
+using HKMirror.Hooks.ILHooks;
 
 namespace BreakableCharms;
 
@@ -35,20 +37,20 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     {
         Instance ??= this;
 
-        On.UIManager.StartNewGame += ICHook;
+        OnUIManager.BeforeOrig.StartNewGame += ICHook;
         Osmi.OsmiHooks.AfterEnterSaveHook += FSMEdits.CharmMenuFSMEdits;
 
         ModHooks.SetPlayerBoolHook += DontSetBrokenCharmBools;
         ModHooks.LanguageGetHook += ChangeCharmNamesOnBroken;
-        
+
         //break charms
-        Osmi.OsmiHooks.PlayerDeathHook += BreakCharmsOnPlayerDead;
-        On.HeroController.HazardRespawn += BreakCharmsOnHazardRespawn;
-        IL.HeroController.TakeDamage += BreakCharmOnDamageTaken; 
-        
+        Osmi.OsmiHooks.PlayerDeathHook += _ => CharmUtils.BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate or CharmState.UnObtained);
+        OnHeroController.BeforeOrig.HazardRespawn += _ => CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate or CharmState.UnObtained);
+        ILHeroController.TakeDamage += BreakCharmOnDamageTaken;
+
         //fix sprites
-        On.CharmDisplay.Start += FixSprites;
-        On.CharmIconList.Start += SetIcons_CharmIconListStart;
+        OnCharmDisplay.WithOrig.Start += FixSprites;
+        OnCharmIconList.AfterOrig.Start += _ => CharmUtils.SetAllCharmIcons(); 
 
         Osmi.OsmiHooks.AfterEnterSaveHook += UnEquipBrokenCharms;
 
@@ -58,8 +60,8 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         if (ModHooks.GetMod(Consts.ICMod) is Mod) ItemChangerInterop.AddItems();
         if (ModHooks.GetMod(Consts.RandoMod) is Mod) RandoInterop.HookRando();
     }
-    
-    private void ICHook(On.UIManager.orig_StartNewGame orig, UIManager self, bool permadeath, bool bossrush)
+
+    private void ICHook(OnUIManager.Delegates.Params_StartNewGame args)
     {
         ItemChangerMod.CreateSettingsProfile(overwrite: false, createDefaultModules: false);
 
@@ -73,9 +75,6 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         {
             ItemChangerInterop.AddPlacements();
         }
-        
-        
-        orig(self, permadeath, bossrush);
     }
 
     private void FixSprites(On.CharmDisplay.orig_Start orig, CharmDisplay self)
@@ -176,18 +175,6 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
             });
         }
     }
-    
-    private void BreakCharmsOnPlayerDead(GameObject _)
-    {
-        CharmUtils.BreakEquippedCharms(s => s is CharmState.Fragile or CharmState.Delicate or CharmState.UnObtained);
-        CharmUtils.SetAllCharmIcons();
-    }
-
-    private IEnumerator BreakCharmsOnHazardRespawn(On.HeroController.orig_HazardRespawn orig, HeroController self)
-    {
-        CharmUtils.BreakEquippedCharms(s => s is CharmState.Delicate or CharmState.UnObtained);
-        yield return orig(self);
-    }
 
     private void LoadInGameResources()
     {
@@ -213,11 +200,6 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         charmBuyFail = allAudioClips.First(a => a.name == "sword_hit_reject");
 
         AudioPlayerPrefab = allGameObjects.First(a => a.name == "Audio Player Actor");
-    }
-    private void SetIcons_CharmIconListStart(On.CharmIconList.orig_Start orig, CharmIconList self)
-    {
-        orig(self);
-        CharmUtils.SetAllCharmIcons();
     }
 
     public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates) =>

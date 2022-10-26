@@ -1,6 +1,7 @@
 ﻿using Osmi.Game;
 using Osmi.Utils;
 using TMPro;
+using HKMirror.Reflection.SingletonClasses;
 
 namespace BreakableCharms;
 
@@ -10,7 +11,6 @@ public static class FSMEdits
     private static PlayMakerFSM charmFSM, costFSM;
     private static GameObject costGo;
     private static TransformDelegate costGoTranform;
-    
     
     public static string CharmNumVariableName = "Current Item Number";
 
