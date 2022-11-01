@@ -60,9 +60,17 @@ public sealed class LocalSettings
     };
 }
 
-public sealed class GlobalSettings
+public sealed class ModGlobalSettings
 {
     public bool RandomizeCharmLocations = false;
     public bool Break_DelicateCharms_On_AllDamage = false;
     public bool Break_DelicateCharms_On_DoubleDamage = true;
+}
+
+/// <summary>
+/// only for interopping with rando
+/// </summary>
+public sealed class RandoSettings
+{
+    public bool RandomizeCharmLocations = false;
 }

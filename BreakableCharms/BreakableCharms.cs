@@ -7,7 +7,7 @@ using HKMirror.Hooks.ILHooks;
 
 namespace BreakableCharms;
 
-public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings>, IGlobalSettings<GlobalSettings>
+public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalSettings>, IGlobalSettings<ModGlobalSettings>
 {
     internal static BreakableCharms Instance;
 
@@ -27,11 +27,11 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     public static LocalSettings localSettings { get; private set; } = new ();
     public void OnLoadLocal(LocalSettings s) => localSettings = s;
     public LocalSettings OnSaveLocal() => localSettings;
-    public static GlobalSettings globalSettings { get; private set; } = new ();
-    public void OnLoadGlobal(GlobalSettings s) => globalSettings = s;
-    public GlobalSettings OnSaveGlobal() => globalSettings;
+    public static ModGlobalSettings globalSettings { get; private set; } = new ();
+    public void OnLoadGlobal(ModGlobalSettings s) => globalSettings = s;
+    public ModGlobalSettings OnSaveGlobal() => globalSettings;
 
-    public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
+    public override string GetVersion() => typeof(BreakableCharms).Assembly.GetName().Version.ToString();
 
     public override void Initialize()
     {
@@ -59,6 +59,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
         //if they dont have ic ig they'll never have leg eater charms
         if (ModHooks.GetMod(Consts.ICMod) is Mod) ItemChangerInterop.AddItems();
         if (ModHooks.GetMod(Consts.RandoMod) is Mod) RandoInterop.HookRando();
+        if (ModHooks.GetMod("RandoSettingsManager") is Mod) RandoSettingsManagerInterop.Hook();
     }
 
     private void ICHook(OnUIManager.Delegates.Params_StartNewGame args)

@@ -12,22 +12,27 @@ public static class RandoMenu
     {
         RandomizerMenuAPI.AddMenuPage(CreateMenuChangerMenu, CreateButtonHandler);
     }
+
+    public static SmallButton SmallButton;
+    public static Color OffColor = Colors.DEFAULT_COLOR;
+    public static Color OnColor = Colors.TRUE_COLOR;
     
-    private static MenuPage MenuPage;
     private static bool CreateButtonHandler(MenuPage previousMenuPage, out SmallButton smallButton)
     {
-        smallButton = new SmallButton(previousMenuPage, "Breakable Charms");
-        smallButton.AddHideAndShowEvent(previousMenuPage, MenuPage);
+        SmallButton = smallButton = new SmallButton(previousMenuPage, "Breakable Charms");
+
+        smallButton.Text.color = BreakableCharms.globalSettings.RandomizeCharmLocations ? OnColor : OffColor;
+
+        smallButton.OnClick += CustomOnClick;
+        
         return true;
     }
 
-    private static void CreateMenuChangerMenu(MenuPage previousMenuPage)
+    private static void CustomOnClick()
     {
-        MenuPage = new MenuPage("Breakable Charms", previousMenuPage);
-        new VerticalItemPanel(MenuPage, 
-            localTopCenter: new Vector2(0f, 300f),
-            vspace: 75f,
-            rootLevel:true,
-            children: new MenuElementFactory<GlobalSettings>(MenuPage, BreakableCharms.globalSettings).Elements);
+        BreakableCharms.globalSettings.RandomizeCharmLocations = !BreakableCharms.globalSettings.RandomizeCharmLocations;
+        SmallButton.Text.color = BreakableCharms.globalSettings.RandomizeCharmLocations ? OnColor : OffColor;
     }
+
+    private static void CreateMenuChangerMenu(MenuPage _) { }
 }

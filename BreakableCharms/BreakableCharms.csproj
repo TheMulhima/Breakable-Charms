@@ -60,6 +60,10 @@
             <HintPath>$(HollowKnightFolder)\Mods\Osmi\Osmi.dll</HintPath>
             <Private>false</Private>
         </Reference>
+        <Reference Include="RandoSettingsManager">
+            <HintPath>$(HollowKnightFolder)\Mods\RandoSettingsManager\RandoSettingsManager.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
         <Reference Include="PlayMaker, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\PlayMaker.dll</HintPath>
             <Private>false</Private>
