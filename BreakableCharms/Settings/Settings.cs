@@ -14,7 +14,9 @@ public sealed class LocalSettings
             Dictionaries.FragileCharmSpriteFromID[charmNum] = SpriteUtils.LoadSpriteFromResources($"Fragile.Charm_{charmNum}");
         }
     }
-    //charmNum, (CharmState, IsBroken)
+    /// <summary>
+    /// Dictionary to store data for charms, keyed by charmNum and the charmdata handles sprites, naming and being broken
+    /// </summary>
     public Dictionary<int, CharmData> BrokenCharms = new()
     {
         { 1, new CharmData((int)Charm.GatheringSwarm) },
