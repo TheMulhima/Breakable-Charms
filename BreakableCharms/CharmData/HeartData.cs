@@ -1,4 +1,4 @@
-﻿namespace BreakableCharms.CharmData;
+﻿namespace BreakableCharms.Data;
 
 public sealed class HeartData : CharmData
 {

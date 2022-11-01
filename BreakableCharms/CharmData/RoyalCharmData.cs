@@ -1,4 +1,4 @@
-﻿namespace BreakableCharms.CharmData;
+﻿namespace BreakableCharms.Data;
 public sealed class RoyalCharmData : CharmData
 {
     public RoyalCharmData():base(36) {}

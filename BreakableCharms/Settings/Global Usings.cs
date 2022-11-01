@@ -14,7 +14,7 @@ global using ItemChanger.Locations;
 global using ItemChanger.Placements;
 global using Satchel.Futils;
 global using HKMirror;
-global using BreakableCharms.CharmData;
+global using BreakableCharms.Data;
 global using BreakableCharms.ItemChanger;
 global using BreakableCharms.Settings;
 global using BreakableCharms.Randomizer;
