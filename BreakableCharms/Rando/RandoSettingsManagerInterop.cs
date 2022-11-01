@@ -16,27 +16,12 @@ public class RandoSettingsManagerInterop
     {
         public override string ModKey => BreakableCharms.Instance.GetName();
 
-        public override VersioningPolicy<string> VersioningPolicy { get; }
-            = new BackwardCompatiblityVersioningPolicy<string>(typeof(BreakableCharms).Assembly.GetName().Version.ToString(), new SemVerComparator());
+        public override VersioningPolicy<string> VersioningPolicy => new StrictModVersioningPolicy(BreakableCharms.Instance);
 
         public override void ReceiveSettings(RandoSettings? settings)
         {
-            if (settings != null)
-            {
-                BreakableCharms.globalSettings.RandomizeCharmLocations = settings.RandomizeCharmLocations;
-                if (RandoMenu.SmallButton != null)
-                {
-                    RandoMenu.SmallButton.Text.color = BreakableCharms.globalSettings.RandomizeCharmLocations ? RandoMenu.OnColor : RandoMenu.OffColor;
-                }
-            }
-            else
-            {
-                BreakableCharms.globalSettings.RandomizeCharmLocations = false;
-                if (RandoMenu.SmallButton != null)
-                {
-                    RandoMenu.SmallButton.Text.color = BreakableCharms.globalSettings.RandomizeCharmLocations ? RandoMenu.OnColor : RandoMenu.OffColor;
-                }
-            }
+            BreakableCharms.globalSettings.RandomizeCharmLocations = settings is { RandomizeCharmLocations: true };
+            RandoMenu.SetButtonColor(BreakableCharms.globalSettings.RandomizeCharmLocations);
         }
 
         public override bool TryProvideSettings(out RandoSettings? settings)

@@ -31,7 +31,15 @@ public static class RandoMenu
     private static void CustomOnClick()
     {
         BreakableCharms.globalSettings.RandomizeCharmLocations = !BreakableCharms.globalSettings.RandomizeCharmLocations;
-        SmallButton.Text.color = BreakableCharms.globalSettings.RandomizeCharmLocations ? OnColor : OffColor;
+        SetButtonColor(BreakableCharms.globalSettings.RandomizeCharmLocations);
+    }
+
+    public static void SetButtonColor(bool isActive)
+    {
+        if (SmallButton != null)
+        {
+            SmallButton.Text.color = isActive ? OnColor : OffColor;
+        }
     }
 
     private static void CreateMenuChangerMenu(MenuPage _) { }
