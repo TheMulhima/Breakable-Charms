@@ -5,4 +5,5 @@ Randomizer 4
 RandomizerCore
 MenuChanger
 ConnectionMetadataInjector
-HKMirror from https://cdn.discordapp.com/attachments/879130542501658624/1029892382134644776/HKMirror.zip
+HKMirror
+RandoSettingsManager from https://github.com/BadMagic100/RandoSettingsManager/releases/download/v1.0.8340.1637/RandoSettingsManager.zip
