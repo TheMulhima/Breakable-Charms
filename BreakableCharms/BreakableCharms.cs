@@ -31,7 +31,7 @@ public sealed class BreakableCharms : Mod, ICustomMenuMod, ILocalSettings<LocalS
     public void OnLoadGlobal(ModGlobalSettings s) => globalSettings = s;
     public ModGlobalSettings OnSaveGlobal() => globalSettings;
 
-    public override string GetVersion() => typeof(BreakableCharms).Assembly.GetName().Version.ToString();
+    public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
 
     public override void Initialize()
     {
