@@ -70,7 +70,7 @@ public static class FSMEdits
             {
                 meshRenderer.enabled = true;
             }
-
+            //todo: base cost on number of notches
             costText.GetComponent<TextMeshPro>().text = "Cost  200";
                 
             //get the first notch cost icon    

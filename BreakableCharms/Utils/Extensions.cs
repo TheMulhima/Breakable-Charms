@@ -34,9 +34,8 @@ public static class Extensions
 
     #endregion
 
-    public static int SetPositive(this int value)
+    public static int EnsurePositive(this int value)
     {
         return value >= 0 ? value : 0;
     }
-    
 }

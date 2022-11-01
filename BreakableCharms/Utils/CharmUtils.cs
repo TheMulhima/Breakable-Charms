@@ -36,11 +36,11 @@ public static class CharmUtils
         
         if (charmNumBroken == (int)Charm.LifebloodHeart)
         {
-            PlayerDataAccess.healthBlue = (oldHealthBlue - 2).SetPositive();
+            PlayerDataAccess.healthBlue = (oldHealthBlue - 2).EnsurePositive();
         }
         if (charmNumBroken == (int)Charm.LifebloodCore)
         {
-            PlayerDataAccess.healthBlue = (oldHealthBlue - 4).SetPositive();
+            PlayerDataAccess.healthBlue = (oldHealthBlue - 4).EnsurePositive();
         }
 
         if (charmNumBroken == (int)Charm.JonisBlessing)
